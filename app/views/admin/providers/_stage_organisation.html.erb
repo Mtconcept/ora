@@ -1,0 +1,47 @@
+<div class="stepper-panel">
+  <header class="stepper-panel-head">
+    <h2>Organisation</h2>
+    <p>The registered entity behind the clinic, then the details patients see. Ora looks up what it can and asks you to confirm the rest.</p>
+  </header>
+  <% if provider.new_record? %>
+    <div class="lookup">
+      <p class="lookup-note"><strong><%= @lookup.source %> is not connected.</strong> <%= @lookup.note %> When a register is wired in, these fields arrive filled and you only confirm them.</p>
+    </div>
+  <% else %>
+    <%= render "lookup", provider: provider, stage: "organisation", kind: "organisation", result: @lookup, query: @lookup_query || provider.registration_number,
+               prompt: "CAC registration number", placeholder: "RC 1234567", action: "Find organisation" %>
+  <% end %>
+  <%= form_with model: provider, scope: :provider, url: provider.new_record? ? admin_providers_path : stage_admin_provider_path(provider, stage: "organisation"),
+                method: provider.new_record? ? :post : :patch do |f| %>
+    <div class="stepper-panel-body">
+      <h3 class="panel-subhead">From the business register</h3>
+      <div class="form-columns">
+        <div><%= f.label :legal_name, "Registered name" %><%= f.text_field :legal_name, required: true, placeholder: "ABC Healthcare Limited" %></div>
+        <div><%= f.label :registration_number, "CAC registration number" %><%= f.text_field :registration_number, required: true, placeholder: "1234567" %></div>
+        <div><%= f.label :registration_status, "Registration status" %><%= f.select :registration_status, [ "Active", "Inactive", "Dissolved" ], include_blank: "Not recorded" %></div>
+        <div><%= f.label :registration_type, "Company type" %><%= f.select :registration_type, [ "Private company", "Public company", "Business name", "Incorporated trustees" ], include_blank: "Not recorded" %></div>
+        <div><%= f.label :registered_on, "Registered on" %><%= f.date_field :registered_on %></div>
+      </div>
+      <h3 class="panel-subhead">Marketplace profile</h3>
+      <p class="admin-field-note">What patients see on Ora. Give the official website and an enrichment step can eventually suggest the rest for you to confirm.</p>
+      <div class="form-columns">
+        <div><%= f.label :name, "Public / trading name" %><%= f.text_field :name, required: true, placeholder: "ABC Cosmetic Clinic" %></div>
+        <div><%= f.label :provider_type, "Provider type" %><%= f.select :provider_type, Provider::TYPES, include_blank: "Select a type" %></div>
+        <div><%= f.label :phone, "Official phone" %><%= f.telephone_field :phone, placeholder: "+234..." %></div>
+        <div><%= f.label :email, "Official email" %><%= f.email_field :email, placeholder: "hello@..." %></div>
+        <div><%= f.label :website %><%= f.url_field :website, placeholder: "https://..." %></div>
+        <div><%= f.label :whatsapp, "WhatsApp" %><%= f.telephone_field :whatsapp, placeholder: "+234..." %></div>
+        <div><%= f.label :logo_url, "Logo URL" %><%= f.url_field :logo_url, placeholder: "https://..." %></div>
+        <div><%= f.label :specialty, "Primary category" %><%= f.select :specialty, Procedure::CATEGORIES, include_blank: "Select a category" %></div>
+        <div class="span-2"><%= f.label :summary, "Short description" %><%= f.text_field :summary, placeholder: "One line a patient would recognise." %></div>
+        <div class="span-2"><%= f.label :description, "Full description" %><%= f.text_area :description, rows: 4 %></div>
+        <div class="span-2"><%= f.label :qualifications %><%= f.text_area :qualifications, rows: 2 %></div>
+        <div><%= f.label :years_practicing, "Years practising" %><%= f.number_field :years_practicing, min: 0 %></div>
+      </div>
+    </div>
+    <footer class="stepper-panel-foot">
+      <p class="admin-field-note">A provider stays a draft, invisible to patients, until every stage is complete.</p>
+      <%= f.submit provider.new_record? ? "Create draft provider" : "Save organisation", class: "button primary small" %>
+    </footer>
+  <% end %>
+</div>

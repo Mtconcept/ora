@@ -1,0 +1,24 @@
+<div class="admin-panel admin-form-panel">
+  <div class="panel-body">
+    <%= render "shared/errors", object: user %>
+    <%= form_with model: [:admin, user] do |form| %>
+      <div class="admin-form-section"><h2>Personal information</h2><p>The details used to identify and contact this user.</p>
+        <div class="form-columns"><div><%= form.label :first_name %><%= form.text_field :first_name, required: true, autocomplete: "given-name" %></div><div><%= form.label :last_name %><%= form.text_field :last_name, autocomplete: "family-name" %></div><div><%= form.label :email %><%= form.email_field :email, autocomplete: "email" %></div><div><%= form.label :phone %><%= form.telephone_field :phone, required: true, autocomplete: "tel" %></div></div>
+      </div>
+      <div class="admin-form-section"><h2>Account access</h2><p>Choose the user’s permissions and current access state.</p>
+        <% role_options = if user.new_record?
+          %w[admin super_admin]
+        elsif current_admin.super_admin?
+          User::ROLES
+        else
+          [user.role]
+        end %>
+        <div class="form-columns"><div><%= form.label :role %><%= form.select :role, role_options.map { |role| [role.humanize, role] } %></div><div><%= form.label :status %><%= form.select :status, User::STATUSES.map { |status| [status.humanize, status] } %></div></div>
+      </div>
+      <div class="admin-form-section"><h2><%= user.persisted? ? "Reset password" : "Password" %></h2><p><%= user.persisted? ? "Leave these fields blank to keep the current password." : "A password is required when creating an admin or super admin." %></p>
+        <div class="form-columns"><div><%= form.label :password %><%= form.password_field :password, autocomplete: "new-password" %></div><div><%= form.label :password_confirmation %><%= form.password_field :password_confirmation, autocomplete: "new-password" %></div></div>
+      </div>
+      <div class="admin-form-actions"><%= link_to "Cancel", user.persisted? ? admin_user_path(user) : admin_users_path, class: "button secondary" %><%= form.submit user.persisted? ? "Save changes" : "Add team member", class: "button primary" %></div>
+    <% end %>
+  </div>
+</div>

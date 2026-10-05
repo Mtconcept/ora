@@ -1,0 +1,266 @@
+<section class="lp-hero" data-controller="hero">
+  <%# One scene per video. The option in view picks the scene; the controller crossfades between them. %>
+  <% first_scene = @hero_options.first&.dig(:scene) || 'dental' %>
+  <div class="lp-hero__media">
+    <% [ [ 'dental', 'ora-hero', 'ora-hero-poster.jpg' ], [ 'cosmetic', 'ora-cosmetic', 'ora-cosmetic-poster.jpg' ] ].each do |scene, file, poster| %>
+      <div class="lp-hero__scene lp-hero__scene--<%= scene %><%= ' is-active' if scene == first_scene %>" data-hero-target="scene" data-scene="<%= scene %>">
+        <video muted loop playsinline preload="auto" <%= 'autoplay' if scene == first_scene %> poster="<%= image_path(poster) %>" aria-hidden="true">
+          <source src="/videos/<%= file %>-720.mp4" type="video/mp4" media="(max-width: 767px)">
+          <source src="/videos/<%= file %>-1080.mp4" type="video/mp4">
+        </video>
+      </div>
+    <% end %>
+  </div>
+  <div class="lp-hero__shade"></div>
+  <div class="lp-hero__content">
+    <div class="lp-hero__head">
+      <p class="lp-hero__kicker">Trusted clinics · Clear prices · <strong>Pay monthly</strong></p>
+      <h1 class="lp-hero__title">
+        <%# Every phrase shares one grid cell, so the heading always holds the height of the longest and never jumps. %>
+        <span class="lp-hero__phrases"><% (@hero_options.any? ? @hero_options.map { |option| option[:phrase] } : [ 'Get the care you need' ]).each_with_index do |phrase, index| %><span class="lp-hero__phrase<%= ' is-active' if index.zero? %>" data-hero-target="phrase"><%= phrase %> today.</span><% end %></span>
+        <span class="is-muted">Pay small, small.</span>
+      </h1>
+      <p class="lp-hero__sub">No more waiting for “when money comes”. Get treated at a trusted clinic now and spread the cost over months. We sort out the rest.</p>
+      <div class="lp-hero__ctas">
+        <%= link_to 'Find my treatment', procedures_path, class: 'lp-btn lp-btn--light' %>
+        <%= link_to 'How it works', '#journey', class: 'lp-btn lp-btn--ghost lp-hero__secondary' %>
+      </div>
+    </div>
+    <% if @hero_options.any? %>
+      <div class="lp-rotator" data-action="mouseenter->hero#hold mouseleave->hero#release focusin->hero#hold focusout->hero#release animationend->hero#next">
+        <% @hero_options.each_with_index do |option, index| %>
+          <%= link_to procedure_path(option[:procedure]), class: "lp-rotator__item#{' is-active' if index.zero?}", data: { hero_target: 'option', scene: option[:scene], action: 'mouseenter->hero#pick' } do %>
+            <span class="lp-rotator__bar"><i></i></span>
+            <span class="lp-rotator__text">
+              <span class="lp-rotator__area"><%= option[:area].upcase %></span>
+              <span class="lp-rotator__name"><%= option[:procedure].name %></span>
+              <span class="lp-rotator__price">from <%= money(monthly(option[:procedure].starting_price)) %> a month</span>
+            </span>
+          <% end %>
+        <% end %>
+        <button class="lp-rotator__toggle" type="button" data-hero-target="toggle" data-action="hero#toggle" aria-label="Pause the video and rotating treatments" aria-pressed="false">
+          <svg class="is-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="3" y="2" width="2.5" height="10" rx="1" fill="currentColor"/><rect x="8.5" y="2" width="2.5" height="10" rx="1" fill="currentColor"/></svg>
+          <svg class="is-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M4 2.5v9l7.5-4.5z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<div class="lp-marquee" aria-label="Care you can explore on Ora">
+  <p class="lp-marquee__label">On Ora</p>
+  <div class="lp-marquee__track">
+    <% 2.times do |copy| %>
+      <ul class="lp-marquee__list"<%= ' aria-hidden="true"'.html_safe if copy == 1 %>>
+        <% @procedures.each do |procedure| %><li><%= link_to procedure.name, procedure_path(procedure), tabindex: (copy == 1 ? -1 : nil) %></li><% end %>
+      </ul>
+    <% end %>
+  </div>
+</div>
+
+<%= render 'evidence' %>
+<div class="lp-rule"></div>
+
+<% if @example %>
+<% monthly_cost = monthly(@example.starting_price) %>
+<% wait = (@example.starting_price.to_f / monthly_cost).ceil %>
+<section class="lp-frame" id="compare">
+  <div class="lp-frame__inner">
+    <header class="lp-head lp-head--ruled">
+      <p class="lp-chip">Now, not someday</p>
+      <h2 class="lp-title">Go from this to that, <strong>without breaking the bank</strong></h2>
+      <p class="lp-sub">Same <%= money(monthly_cost) %> a month, two different endings. Save it for <%= wait %> months and hope nothing changes, or get treated now and pay as you smile.</p>
+    </header>
+    <div class="lp-compare-wrap">
+      <div class="lp-compare" data-controller="compare">
+        <div class="lp-compare__layer lp-compare__layer--after">
+          <%= image_tag 'ora-consultation.jpg', alt: 'A dentist walks a smiling patient through her treatment using a model of the teeth', loading: 'lazy' %>
+          <p class="lp-compare__label is-right">With Ora</p>
+          <div class="lp-compare__card is-right">
+            <p class="lp-mono">Pay small, small · <%= @example.name %></p>
+            <p class="lp-compare__amount"><%= money(monthly_cost) %><small>a month</small></p>
+            <p class="lp-compare__line">Treatment starts once your plan is approved</p>
+            <p class="lp-compare__fine">12 months · <%= money(monthly_cost * 12) %> in total</p>
+          </div>
+        </div>
+        <div class="lp-compare__layer lp-compare__layer--before" aria-hidden="true">
+          <%= image_tag 'ora-consultation.jpg', alt: '', loading: 'lazy' %>
+          <p class="lp-compare__label">Before Ora</p>
+          <div class="lp-compare__card">
+            <p class="lp-mono">Pay it all at once · <%= @example.name %></p>
+            <p class="lp-compare__amount"><%= money(@example.starting_price) %></p>
+            <p class="lp-compare__line">Due in full before anything starts</p>
+            <p class="lp-compare__fine">Or save <%= money(monthly_cost) %> a month for <%= wait %> months first</p>
+          </div>
+        </div>
+        <div class="lp-compare__handle" aria-hidden="true"><span><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 5-4 4 4 4M11.5 5l4 4-4 4"/></svg></span></div>
+        <input type="range" min="0" max="100" value="50" aria-label="Drag to compare paying upfront with paying monthly" data-action="input->compare#move">
+      </div>
+      <%= link_to affordability_path, class: 'lp-link' do %>See what fits your pocket <%= icon('arrow', size: 16) %><% end %>
+    </div>
+  </div>
+</section>
+<div class="lp-rule"></div>
+<% end %>
+
+<section class="lp-frame">
+  <div class="lp-frame__inner">
+    <header class="lp-head lp-head--ruled">
+      <p class="lp-chip">Two ways to get care</p>
+      <h2 class="lp-title">Care without <strong>the guesswork</strong></h2>
+      <p class="lp-sub">Most people meet the price at the clinic door. With Ora, you see it before you leave home.</p>
+    </header>
+    <div class="lp-ways">
+      <% [['The usual way', nil, [['Guess the price', 'Nobody says until you’re in the chair.'], ['Clinic-hop', 'Another day off work. Another “come back tomorrow”.'], ['Get a vague quote', 'Hard to compare. Harder to trust.'], ['Pay it all at once', 'The whole bill, before anything starts.'], ['Put it off, again', 'And the problem quietly grows.']]],
+          ['The Ora way', 'lp-way--ora', [['Find your treatment', 'Real prices from checked clinics, side by side.'], ['Pick a clinic you like', 'Every price is shown upfront.'], ['Choose how to pay', 'All at once, or small, small every month.'], ['Meet your clinician', 'They confirm what’s right for you.'], ['Get treated and smile', 'With Ora beside you all the way.']]]].each do |title, modifier, steps| %>
+        <div class="lp-way <%= modifier %>">
+          <div class="lp-way__head"><span class="lp-way__icon"><%= modifier ? ora_mark(size: 16) : icon('search', size: 16) %></span><p><%= title %></p></div>
+          <ol class="lp-way__steps">
+            <% steps.each_with_index do |(step, detail), index| %>
+              <li><div class="lp-way__marker"><span></span><i></i></div><div class="lp-way__text"><p class="lp-mono">Step <%= index + 1 %></p><p class="lp-way__title"><%= step %></p><p class="lp-way__detail"><%= detail %></p></div></li>
+            <% end %>
+          </ol>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-frame" id="why">
+  <div class="lp-frame__inner">
+    <div class="lp-intro">
+      <header class="lp-head">
+        <p class="lp-chip">Care, chosen by you</p>
+        <h2 class="lp-title lp-title--sm">What’s been <strong>on your mind?</strong></h2>
+        <p class="lp-sub">The smile you hide in photos. The glasses you’re tired of. The change you keep thinking about. Start here.</p>
+      </header>
+      <ul class="lp-checks">
+        <li>Real prices, before you commit</li>
+        <li>Clinics checked by Ora</li>
+        <li>Pay at once, or monthly</li>
+        <li>Real people, not bots</li>
+      </ul>
+    </div>
+    <div class="lp-cards">
+      <% [['Dental', 'Laugh without covering your mouth.', 'Braces, implants, veneers and more.'], ['Vision', 'See the world in sharp focus.', 'From eye checks to LASIK.'], ['Cosmetic', 'Feel at home in your body.', 'Considered procedures, at your pace.']].each do |category, title, desc| %>
+        <%= link_to procedures_path(category: category), class: "lp-card lp-card--#{category.downcase}" do %>
+          <div class="lp-card__visual">
+            <div class="lp-card__labels"><span><%= category.upcase %></span><span><%= pluralize(@category_counts.fetch(category, 0), 'treatment').upcase %></span></div>
+            <%= icon(category_icon(category), size: 120) %>
+            <span class="lp-card__go"><%= icon('diagonal', size: 18) %></span>
+          </div>
+          <div class="lp-card__body">
+            <h3><%= title %></h3>
+            <p><%= desc %></p>
+            <% if (floor = @category_floors[category]) %><p class="lp-card__price">From <%= money(floor) %></p><% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-journey" id="journey">
+  <div class="lp-journey__panel">
+    <header class="lp-head lp-head--glass">
+      <p class="lp-chip">Your care journey</p>
+      <h2 class="lp-title">One tap starts it. <strong>We walk the rest with you.</strong></h2>
+      <p class="lp-sub">You don’t need it all figured out. Move one step at a time, and pause whenever you like.</p>
+    </header>
+    <ol class="lp-journey__list">
+      <li><span>[1]</span><p>Pick your treatment and clinic</p></li>
+      <li><span>[2]</span><p>Tell us a little about you, in two minutes</p></li>
+      <li><span>[3]</span><p>Pay at once, or small, small every month</p></li>
+      <li><span>[4]</span><p>We line up your clinic. You get treated.</p></li>
+    </ol>
+    <%= link_to procedures_path, class: 'lp-btn lp-btn--light lp-journey__cta' do %>Find my treatment <%= icon('arrow', size: 18) %><% end %>
+  </div>
+  <div class="lp-journey__panel lp-journey__panel--visual">
+    <% if @example %>
+      <article class="lp-plan" aria-label="Example care plan">
+        <div class="lp-plan__top"><span class="lp-mono">EXAMPLE CARE PLAN</span><span class="lp-plan__tag">Illustration</span></div>
+        <div class="lp-plan__title"><p class="lp-mono"><%= @example.category.upcase %></p><h3><%= @example.name %></h3></div>
+        <dl class="lp-plan__rows">
+          <div><dt>Estimate from</dt><dd><%= money(@example.starting_price) %></dd></div>
+          <div><dt>Spread over</dt><dd>12 months</dd></div>
+          <div><dt>Each month, about</dt><dd><%= money(monthly(@example.starting_price)) %></dd></div>
+        </dl>
+        <ol class="lp-plan__steps">
+          <li class="is-done"><span></span>Choose</li>
+          <li class="is-done"><span></span>Details</li>
+          <li class="is-current"><span></span>Plan</li>
+          <li><span></span>Treat</li>
+        </ol>
+        <p class="lp-plan__note">Your clinician confirms what’s right for you, and the final price.</p>
+      </article>
+    <% end %>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-frame">
+  <div class="lp-frame__inner lp-budget">
+    <header class="lp-head lp-head--left">
+      <p class="lp-chip">Your pocket, your pace</p>
+      <h2 class="lp-title">Start with what your <strong>pocket can carry</strong></h2>
+      <p class="lp-sub">Slide to a monthly amount you won’t lose sleep over. We’ll show what it could cover. No credit check.</p>
+      <%= link_to affordability_path, class: 'lp-link' do %>Open the full calculator <%= icon('arrow', size: 16) %><% end %>
+    </header>
+    <%= form_with url: affordability_path, method: :get, class: 'lp-meter', data: { controller: 'budget' } do %>
+      <div class="lp-meter__head"><p class="lp-mono">I can set aside</p><p class="lp-meter__months lp-mono" data-budget-target="months">12 months</p></div>
+      <p class="lp-meter__value"><span data-budget-target="monthly"><%= money(75000) %></span><small>a month</small></p>
+      <div class="lp-meter__slider">
+        <div class="lp-meter__track"><i data-budget-target="fill"></i></div>
+        <input type="range" name="budget" min="10000" max="500000" step="5000" value="75000" aria-label="Monthly budget" data-budget-target="range" data-action="input->budget#render">
+      </div>
+      <div class="lp-meter__scale lp-mono"><span>₦10K</span><span>₦500K</span></div>
+      <input type="hidden" name="term" value="12">
+      <div class="lp-meter__terms" role="group" aria-label="Spread over">
+        <% [6, 12, 18, 24].each do |term| %><button type="button" data-term="<%= term %>" aria-pressed="<%= term == 12 %>" data-budget-target="term" data-action="budget#pick"><%= term %> mo</button><% end %>
+      </div>
+      <div class="lp-meter__result"><p class="lp-mono">Could cover care up to</p><p data-budget-target="total"><%= money((75000 * 12 / 1.12).floor) %></p></div>
+      <button type="submit" class="lp-btn lp-btn--dark">Show me what fits <%= icon('arrow', size: 18) %></button>
+      <p class="lp-meter__fine">Assumes a 12% total financing charge over the term. This is not an APR or a lender offer.</p>
+    <% end %>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-frame">
+  <div class="lp-frame__inner lp-features">
+    <div class="lp-feature lp-feature--stat"><p class="lp-feature__num"><%= @procedures.size %></p><h3>Treatments to explore</h3><p>Teeth, eyes and cosmetic care, each priced by the clinic that offers it.</p></div>
+    <div class="lp-feature lp-feature--stat"><p class="lp-feature__num"><%= @provider_count %></p><h3>Clinics on Ora</h3><p>Each one checked by our team before it goes live.</p></div>
+    <div class="lp-feature"><span class="lp-feature__icon"><%= icon('wallet', size: 20) %></span><h3>Your money, your call</h3><p>Pay the clinic at once, or spread it with a monthly plan.</p></div>
+    <div class="lp-feature"><span class="lp-feature__icon"><%= icon('shield', size: 20) %></span><h3>Your clinician decides</h3><p>Only a qualified professional says what’s right for you.</p></div>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-frame" id="faq">
+  <div class="lp-frame__inner lp-faq">
+    <header class="lp-head">
+      <p class="lp-chip">Good questions</p>
+      <h2 class="lp-title">Honest answers, <strong>before you ask</strong></h2>
+      <p class="lp-sub">Still wondering? <%= link_to 'Talk to a real person', support_path %>.</p>
+    </header>
+    <div class="lp-faq__list">
+      <% [['What is Ora?', 'Ora helps you find trusted clinics, see real prices and spread the cost of planned care, with a real person guiding you from first click to recovery.'], ['Do I have to take a payment plan?', 'No. You can pay the clinic in full if you prefer. Monthly plans are there when they help.'], ['Does checking my budget commit me to anything?', 'Not at all. The calculator is a guide. It doesn’t apply for credit or book anything.'], ['Who decides if a treatment is right for me?', 'Your clinician. Ora looks after the journey; a qualified professional makes every medical call.'], ['How do you choose clinics?', 'Every clinic passes Ora’s checks before it appears: who they are, where they practise, what they offer and what they charge.']].each_with_index do |(question, answer), index| %>
+        <details class="lp-faq__item"<%= ' open' if index.zero? %>><summary><h3><%= question %></h3><span aria-hidden="true"></span></summary><p><%= answer %></p></details>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="lp-cta">
+  <div class="lp-cta__inner">
+    <header class="lp-head lp-head--glass">
+      <p class="lp-chip">Ready when you are</p>
+      <h2 class="lp-title">The best time was last year. <strong>The next best is today.</strong></h2>
+      <p class="lp-sub">Find your treatment, pick a clinic, choose how to pay. We’ll take it from there.</p>
+    </header>
+    <%= link_to procedures_path, class: 'lp-glass-btn' do %><span>Find my treatment</span><i><%= icon('arrow', size: 18) %></i><% end %>
+  </div>
+</section>
+

@@ -1,0 +1,4 @@
+<% content_for :title, "Edit #{@user.name}" %><% content_for :page_label, "Users / Edit" %>
+<div class="breadcrumb"><%= link_to "Users", admin_users_path %> / <%= link_to @user.name, admin_user_path(@user) %> / Edit</div>
+<div class="admin-page-heading"><div><h1>Edit user</h1><p>Update <%= @user.name %>’s profile and account access.</p></div></div>
+<%= render "form", user: @user %>

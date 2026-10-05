@@ -1,0 +1,48 @@
+<div class="stepper-panel">
+  <header class="stepper-panel-head">
+    <h2>Locations</h2>
+    <p>Where this provider treats patients. Search for the clinic and confirm what comes back; type it in only when nothing does.</p>
+  </header>
+  <%= render "lookup", provider: provider, stage: "locations", kind: "place", result: @lookup, query: @lookup_query,
+             prompt: "Search clinic or address", placeholder: "ABC Cosmetic Clinic Lekki", action: "Find location" %>
+  <div class="stepper-panel-body">
+    <% if @locations.any? %>
+      <h3 class="panel-subhead"><%= pluralize(@locations.size, "location") %> recorded</h3>
+      <div class="location-list">
+        <% @locations.each do |location| %>
+          <div class="location-row">
+            <span class="next-icon"><%= admin_icon("check", size: 16) %></span>
+            <div>
+              <strong><%= location.name %></strong>
+              <small><%= location.address.presence || "No address recorded" %></small>
+              <% if location.phone.present? %><small><%= location.phone %></small><% end %>
+            </div>
+            <%= button_to location_admin_provider_path(provider, location_id: location.id), method: :delete, class: "button danger small",
+                          form: { data: { turbo_confirm: "Remove #{location.name} from this provider?" } } do %>Remove<% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="stepper-note">No locations yet. A provider needs at least one before it can be published.</p>
+    <% end %>
+    <h3 class="panel-subhead"><%= @locations.any? ? "Add another location" : "Add a location" %></h3>
+    <%= form_with model: @location, scope: :provider_location, url: locations_admin_provider_path(provider), id: "add-location" do |f| %>
+      <%= render "shared/errors", object: @location %>
+      <div class="form-columns">
+        <div><%= f.label :name, "Location name" %><%= f.text_field :name, required: true, placeholder: "Lekki" %></div>
+        <div><%= f.label :phone, "Location phone" %><%= f.telephone_field :phone, placeholder: "+234..." %></div>
+        <div class="span-2"><%= f.label :address_line, "Street address" %><%= f.text_field :address_line, placeholder: "12 Example Street, Lekki Phase 1" %></div>
+        <div><%= f.label :city %><%= f.text_field :city, placeholder: "Lagos" %></div>
+        <div><%= f.label :state %><%= f.text_field :state, placeholder: "Lagos" %></div>
+        <div><%= f.label :country %><%= f.text_field :country %></div>
+        <div><%= f.label :latitude, "Latitude (optional)" %><%= f.number_field :latitude, step: "any" %></div>
+        <div><%= f.label :longitude, "Longitude (optional)" %><%= f.number_field :longitude, step: "any" %></div>
+      </div>
+      <div class="admin-form-actions"><%= f.submit "Add location", class: "button primary small" %></div>
+    <% end %>
+  </div>
+  <footer class="stepper-panel-foot">
+    <p class="admin-field-note">Coordinates are optional today and would come from a places lookup once one is connected.</p>
+    <%= link_to stage_admin_provider_path(provider, stage: "services"), class: "button secondary small" do %>Continue to services<%= admin_icon("chevron", size: 16) %><% end %>
+  </footer>
+</div>

@@ -1,0 +1,62 @@
+<% content_for :title, @provider.name %>
+<% floor = @listings.map(&:price).min %>
+<section class="lp-frame">
+  <div class="lp-frame__inner">
+    <nav class="lp-crumbs" aria-label="Breadcrumb"><%= link_to 'Clinics', providers_path %><span class="lp-crumbs__sep" aria-hidden="true"></span><span aria-current="page"><%= @provider.name %></span></nav>
+    <header class="lp-profile">
+      <div class="lp-profile__tile lp-card--<%= @provider.specialty.to_s.downcase %>"><span class="lp-provider__mono"><%= @provider.name.split.map(&:first).first(2).join %></span></div>
+      <div class="lp-profile__copy">
+        <p class="lp-chip"><%= @provider.specialty %> · <%= @provider.location %></p>
+        <h1 class="lp-title"><%= @provider.name %></h1>
+        <p class="lp-sub"><%= @provider.description %></p>
+        <span class="lp-tag"><%= @provider.verified? ? 'Checked by Ora' : 'Demo profile · Not a verified live clinic' %></span>
+      </div>
+    </header>
+    <div class="lp-stats">
+      <div><p class="lp-stats__num"><%= @provider.years_practicing %></p><p>Years caring for patients</p></div>
+      <div><p class="lp-stats__num"><%= @listings.size %></p><p><%= 'Treatment'.pluralize(@listings.size) %> on Ora</p></div>
+      <div><p class="lp-stats__num"><%= floor ? money(floor) : '—' %></p><p>Prices from</p></div>
+    </div>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-frame">
+  <div class="lp-frame__inner lp-profile__body">
+    <div class="lp-profile__main">
+      <header class="lp-head lp-head--left lp-head--tight">
+        <p class="lp-chip">What they offer</p>
+        <h2 class="lp-title lp-title--sm">Care at <strong><%= @provider.name %></strong></h2>
+        <p class="lp-sub">These are the clinic’s own prices. Your clinician confirms what’s right for you, and the final figure, before anything is agreed.</p>
+      </header>
+      <ol class="lp-offers">
+        <% @listings.each do |listing| %>
+          <li class="lp-offer">
+            <div class="lp-offer__info">
+              <p class="lp-mono"><%= listing.procedure.category %></p>
+              <h3><%= link_to listing.procedure.name, procedure_path(listing.procedure) %></h3>
+              <p class="lp-offer__price"><%= money(listing.price) %><span>or about <%= money(monthly(listing.price)) %> a month</span></p>
+            </div>
+            <div class="lp-offer__actions">
+              <%= link_to start_journey_path(listing_id: listing.id), class: 'lp-btn lp-btn--dark lp-btn--sm' do %>Start my care journey <%= icon('arrow', size: 16) %><% end %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+      <div class="lp-facts">
+        <div><p class="lp-mono">Experience</p><h3><%= @provider.years_practicing %> years in practice</h3><p>Sample clinic information for this preview.</p></div>
+        <div><p class="lp-mono">Qualifications</p><p><%= @provider.qualifications %></p></div>
+      </div>
+      <div class="lp-note"><%= icon('shield', size: 18) %><p>Before a clinic goes live, Ora confirms its identity, registration, facility and prices. The clinics in this preview are fictional.</p></div>
+    </div>
+    <aside class="lp-aside">
+      <div class="lp-aside__card">
+        <span class="lp-feature__icon"><%= icon('heart', size: 20) %></span>
+        <h3>Take your time.</h3>
+        <p>Your care journey starts with a few simple questions. Pause whenever you like; nothing is booked or charged until you say so.</p>
+        <p class="lp-mono">Your money, your call</p>
+        <p>Pay the clinic at once, or spread it small, small every month.</p>
+      </div>
+    </aside>
+  </div>
+</section>

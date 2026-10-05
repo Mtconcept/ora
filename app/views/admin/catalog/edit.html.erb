@@ -1,0 +1,32 @@
+<% content_for :title, "Edit #{@record.name_was}" %><% content_for :page_label, "Procedures / #{@record.name_was}" %>
+<div class="breadcrumb"><%= link_to "Procedures", admin_catalog_path(@kind) %> / <%= @record.name_was %></div>
+<div class="admin-page-heading">
+  <div><h1><%= @record.name_was %></h1><p><%= @record.category %> · offered by <%= pluralize(@listings.size, "provider") %></p></div>
+  <%= status_badge(@record.published? ? "published" : "hidden") %>
+</div>
+<%= render "form" %>
+<%# Prices belong to the provider that charges them, so they are read-only here. %>
+<div class="admin-panel">
+  <div class="panel-heading">
+    <div><h2>Offered by</h2><p>What each provider charges. Edit a price on the provider, under Services.</p></div>
+  </div>
+  <% if @listings.any? %>
+    <div class="table-scroll"><table class="data-table">
+      <thead><tr><th>Provider</th><th>Location</th><th>Starting price</th><th>Consultation</th><th>Status</th><th><span class="sr-only">Actions</span></th></tr></thead>
+      <tbody>
+        <% @listings.each do |listing| %>
+          <tr>
+            <td><strong><%= listing.provider.name %></strong><small><%= listing.provider.provider_type.presence || listing.provider.specialty %></small></td>
+            <td><%= listing.where_offered %></td>
+            <td><%= money(listing.price) %></td>
+            <td><%= listing.consultation_fee ? money(listing.consultation_fee) : money(listing.provider.consultation_fee) %></td>
+            <td><span class="admin-status status-<%= listing.status == "active" && listing.provider.published? ? "active" : "pending" %>"><i></i><%= listing.provider.published? ? listing.status.humanize : "Provider in draft" %></span></td>
+            <td class="row-actions"><%= link_to stage_admin_provider_path(listing.provider, stage: "services"), class: "row-chevron", aria: { label: "Open #{listing.provider.name} services" } do %><%= admin_icon("chevron", size: 16) %><% end %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table></div>
+  <% else %>
+    <div class="panel-body"><p class="admin-empty">No provider offers this procedure yet. Add it from a provider's <strong>Services</strong> stage.</p></div>
+  <% end %>
+</div>

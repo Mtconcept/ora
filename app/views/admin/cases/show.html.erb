@@ -1,0 +1,99 @@
+<% content_for :title, @case.reference %><% content_for :page_label, "Care journeys / #{@case.reference}" %>
+<div class="breadcrumb"><%= link_to "Care journeys", admin_cases_path %> / <%= @case.reference %></div>
+<% step = @case.next_step %>
+<div class="journey-head">
+  <div>
+    <h1><%= @case.user.name %></h1>
+    <p><%= @case.procedure.name %> · <%= @case.provider.name %>, <%= @case.provider.location %></p>
+    <div class="journey-head-meta">
+      <span class="admin-id"><%= @case.reference %></span>
+      <%= status_badge(@case.status) %>
+      <%= link_to admin_customer_path(@case.user), class: "text-link" do %>Patient details <%= admin_icon("chevron", size: 12) %><% end %>
+    </div>
+  </div>
+  <div class="journey-head-figure"><small><%= @case.final_price ? "Final price" : "Estimate" %></small><strong><%= money(@case.cost) %></strong></div>
+</div>
+<%= render "shared/errors", object: @case %>
+<section class="stepper-now <%= "waiting" if step[:waiting] %>">
+  <div>
+    <span class="eyebrow"><%= step[:waiting] ? "Waiting on others" : "Needs attention" %></span>
+    <p><%= step[:message] %></p>
+  </div>
+  <%= link_to admin_case_path(@case, section: step[:section]), class: "button secondary small" do %><%= phase_name(step[:section]) %> step<%= admin_icon("chevron", size: 16) %><% end %>
+</section>
+<%= section_label "Care journey" %>
+<div class="admin-panel stepper-card">
+  <%= render "shared/stepper_rail", steps: care_stepper_steps(@case), open: @section, label: "Journey stages",
+             note: ("This journey was cancelled. Records stay readable but the stages no longer advance." if @case.cancelled?) %>
+  <%= render "stage_panel", section: @section %>
+</div>
+<%= section_label "Up next" %>
+<div class="journey-next">
+  <% if @case.consultation_at.present? %>
+    <div class="next-card <%= "confirmed" if @case.consultation_confirmed? %>">
+      <span class="next-icon"><%= admin_icon("appointments", size: 16) %></span>
+      <div><strong>Consultation</strong><small><%= wat(@case.consultation_at) %></small><small><%= @case.consultation_confirmed? ? "Confirmed by the clinic" : "Awaiting clinic confirmation" %></small></div>
+    </div>
+  <% end %>
+  <% if @case.treatment_at.present? %>
+    <div class="next-card <%= "confirmed" if @case.treatment_confirmed? %>">
+      <span class="next-icon"><%= admin_icon("appointments", size: 16) %></span>
+      <div><strong>Treatment</strong><small><%= wat(@case.treatment_at) %></small><small><%= @case.treatment_confirmed? ? "Confirmed by the clinic" : "Awaiting clinic confirmation" %></small></div>
+    </div>
+  <% end %>
+  <% if @case.consultation_at.blank? && @case.treatment_at.blank? %>
+    <p class="admin-empty">Nothing is scheduled. Dates appear here once the patient requests them.</p>
+  <% end %>
+</div>
+<%= section_label "Record" %>
+<div class="journey-record">
+  <div class="admin-panel">
+    <div class="panel-heading"><div><h2>Activity</h2><p>Every update to this care journey.</p></div></div>
+    <% events = @case.case_events.order(created_at: :desc).to_a %>
+    <div class="panel-body admin-audit-list">
+      <% events.first(5).each do |event| %><div><span><%= event.message %></span><strong><%= event.user&.name || "System" %></strong><small><%= event.created_at.strftime("%d %b %Y, %H:%M") %></small></div><% end %>
+      <% if events.size > 5 %>
+        <details class="stepper-more"><summary><%= pluralize(events.size - 5, "earlier update") %></summary>
+          <% events.drop(5).each do |event| %><div><span><%= event.message %></span><strong><%= event.user&.name || "System" %></strong><small><%= event.created_at.strftime("%d %b %Y, %H:%M") %></small></div><% end %>
+        </details>
+      <% end %>
+      <% if events.empty? %><p class="admin-empty">No activity recorded yet.</p><% end %>
+    </div>
+  </div>
+  <div>
+    <details class="admin-panel disclosure" <%= "open" if @case.internal_notes.present? %>>
+      <summary><span><strong>Team notes</strong><small>Private to operations.</small></span><%= admin_icon("chevron", size: 16) %></summary>
+      <div class="panel-body">
+        <%= form_with model: @case, url: admin_case_path(@case), id: "team-notes-form" do |f| %>
+          <%= hidden_field_tag :section, @section %>
+          <%= f.label :internal_notes, "Team notes and next action" %><%= f.text_area :internal_notes, rows: 4, placeholder: "What the team agreed, and who does what next." %>
+          <div class="admin-form-actions"><%= f.submit "Save notes", class: "button secondary small" %></div>
+        <% end %>
+      </div>
+    </details>
+    <details class="admin-panel disclosure">
+      <summary><span><strong>Patient details</strong><small>Contact and intake information.</small></span><%= admin_icon("chevron", size: 16) %></summary>
+      <div class="panel-body">
+        <dl class="admin-detail-list">
+          <dt>Phone</dt><dd><%= @case.user.phone %></dd>
+          <dt>Email</dt><dd><%= @case.user.email.presence || "—" %></dd>
+          <dt>Area</dt><dd><%= @case.area %></dd>
+          <dt>Employment</dt><dd><%= @case.employment %></dd>
+          <dt>Income range midpoint</dt><dd><%= money(@case.monthly_income) %></dd>
+          <dt>Monthly comfort budget</dt><dd><%= money(@case.monthly_budget) %></dd>
+          <dt>Original estimate</dt><dd><%= money(@case.estimated_price) %></dd>
+          <dt>Consent recorded</dt><dd><%= wat(@case.consented_at, "—") %></dd>
+        </dl>
+        <%= link_to "Open full profile", admin_customer_path(@case.user), class: "text-link" %>
+      </div>
+    </details>
+    <% if @inquiries.any? %>
+      <div class="admin-panel">
+        <div class="panel-heading"><div><h2>Open messages</h2><p>Concierge messages from this patient.</p></div><%= link_to "Inbox", admin_inbox_path, class: "text-link" %></div>
+        <div class="panel-body admin-audit-list">
+          <% @inquiries.each do |request| %><div><span><%= request.message.truncate(140) %></span><strong>Open</strong><small><%= request.created_at.strftime("%d %b %Y, %H:%M") %></small></div><% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

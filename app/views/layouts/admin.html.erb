@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for?(:title) ? yield(:title) : "Admin" %> · Ora</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %><%= csp_meta_tag %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %><%= javascript_importmap_tags %>
+  </head>
+  <body class="admin-body">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <aside class="admin-sidebar">
+      <div class="admin-brand"><%= link_to "ora", admin_root_path, class: "admin-logo" %><span>Admin</span></div>
+      <%# Navigation carries the jobs operations does, not every screen. Pricing lives inside
+          Procedures, and the concierge inbox and staff accounts live under Settings. %>
+      <nav aria-label="Admin navigation">
+        <%= admin_nav_link "Overview", admin_root_path, "dashboard", controller_name == "dashboard" && action_name == "index" %>
+        <%= admin_nav_link "Care journeys", admin_cases_path, "journeys", controller_name == "cases" %>
+        <%= admin_nav_link "Patients", admin_customers_path, "customers", controller_name == "customers" %>
+        <%= admin_nav_link "Procedures", admin_catalog_path("procedures"), "procedures", controller_name == "catalog" %>
+        <%= admin_nav_link "Appointments", admin_appointments_path, "appointments", controller_name == "appointments" %>
+        <hr class="sidebar-rule">
+        <%= admin_nav_link "Providers", admin_providers_path, "providers", controller_name == "providers" %>
+        <%= admin_nav_link "Settings", admin_settings_path, "settings", controller_name.in?(%w[settings users]) || (controller_name == "dashboard" && action_name == "inbox") %>
+      </nav>
+      <div class="sidebar-bottom">
+        <%= link_to root_path, class: "admin-view-site" do %><%= admin_icon("external") %><span>View Ora website</span><% end %>
+        <%= button_to admin_sign_out_path, method: :delete, class: "sidebar-signout" do %><%= admin_icon("logout") %><span>Sign out</span><% end %>
+      </div>
+    </aside>
+    <div class="admin-workspace">
+      <header class="admin-topbar">
+        <div><strong><%= content_for?(:page_label) ? yield(:page_label) : "Ora admin" %></strong></div>
+        <div class="admin-profile"><span class="admin-profile-copy"><%= current_admin.first_name %><small><%= current_admin.role.humanize %></small></span><span class="avatar"><%= current_admin.first_name.to_s.first.upcase %></span></div>
+      </header>
+      <%= render "shared/flash" %>
+      <main id="main" class="admin-main"><%= yield %></main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+<%# Adding a procedure asks for the few things it cannot exist without. The longer copy is written on
+    the procedure page afterwards, and its prices belong to the providers that offer it. %>
+<div class="admin-panel admin-form-panel">
+  <div class="panel-body">
+    <%= render "shared/errors", object: @record %>
+    <%= form_with model: @record, scope: :record, url: @record.persisted? ? admin_update_catalog_path(kind: @kind, id: @record.id) : admin_catalog_path(@kind), method: @record.persisted? ? :patch : :post do |f| %>
+      <% if @record.persisted? %>
+        <div class="admin-form-section"><h2>Details</h2><p>How this procedure appears to patients, everywhere it is offered.</p>
+          <div class="form-columns">
+            <div><%= f.label :name %><%= f.text_field :name, required: true %></div>
+            <div><%= f.label :slug, "URL slug (generated if blank)" %><%= f.text_field :slug %></div>
+            <div><%= f.label :category %><%= f.select :category, Procedure::CATEGORIES %></div>
+            <div><%= f.label :starting_price, "Catalogue starting price (₦)" %><%= f.number_field :starting_price, required: true, min: 1, step: 1 %></div>
+            <div class="span-2"><%= f.label :summary %><%= f.text_field :summary, required: true %></div>
+            <div class="span-2"><%= f.label :recovery, "Recovery guidance supplied by clinician" %><%= f.text_area :recovery, rows: 2 %></div>
+            <div class="span-2"><%= f.label :description %><%= f.text_area :description, rows: 5 %></div>
+          </div>
+        </div>
+        <div class="admin-form-section"><h2>Availability</h2><p>Control what patients can see in the directory.</p>
+          <label class="checkbox-option"><%= f.check_box :published %><span>Visible in the public care directory</span></label>
+        </div>
+      <% else %>
+        <div class="admin-form-section"><h2>Procedure</h2><p>The essentials. You can write the full description and recovery guidance once it is saved.</p>
+          <div class="form-columns">
+            <div><%= f.label :name, "Procedure name" %><%= f.text_field :name, required: true, placeholder: "Rhinoplasty" %></div>
+            <div><%= f.label :category %><%= f.select :category, Procedure::CATEGORIES %></div>
+            <div class="span-2"><%= f.label :summary, "Short description" %><%= f.text_field :summary, required: true, placeholder: "One line a patient would recognise." %></div>
+            <div><%= f.label :starting_price, "Catalogue starting price (₦)" %><%= f.number_field :starting_price, required: true, min: 1, step: 1 %></div>
+          </div>
+        </div>
+        <div class="admin-form-section"><h2>Availability</h2><p>Control what patients can see in the directory.</p>
+          <label class="checkbox-option"><%= f.check_box :published %><span>Visible in the public care directory</span></label>
+        </div>
+      <% end %>
+      <div class="admin-form-actions"><%= link_to "Cancel", admin_catalog_path(@kind), class: "button secondary" %><%= f.submit @record.persisted? ? "Save changes" : "Add procedure", class: "button primary" %></div>
+    <% end %>
+  </div>
+</div>

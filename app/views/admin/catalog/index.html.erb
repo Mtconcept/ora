@@ -1,0 +1,29 @@
+<% content_for :title, "Procedures" %><% content_for :page_label, "Procedures" %>
+<div class="admin-page-heading">
+  <div><h1>Procedures</h1><p>Ora's catalogue. Each procedure is described once here; providers set their own prices against it.</p></div>
+  <%= link_to admin_new_catalog_path(@kind), class: "button primary small" do %><%= admin_icon("plus", size: 16) %> Add procedure<% end %>
+</div>
+<%= form_with url: admin_catalog_path(@kind), method: :get, class: "admin-toolbar" do |form| %>
+  <span class="admin-count"><%= pluralize(@records.size, "procedure") %></span>
+  <div class="admin-search"><%= admin_icon("search", size: 16) %><%= form.search_field :q, value: params[:q], placeholder: "Search procedures", aria: { label: "Search procedures" } %></div>
+<% end %>
+<div class="procedure-grid">
+  <% @records.each do |record| %>
+    <% prices = record.listings.map(&:price) %>
+    <%= link_to admin_edit_catalog_path(kind: "procedures", id: record.id), class: "procedure-card" do %>
+      <div class="procedure-card-top">
+        <div><strong><%= record.name %></strong><small><%= record.category %></small></div>
+        <%= admin_icon("chevron", size: 16) %>
+      </div>
+      <div class="procedure-card-facts">
+        <div><small>Starting from</small><strong><%= money(prices.min || record.starting_price) %></strong></div>
+        <div><small>Providers</small><strong><%= prices.size %></strong></div>
+      </div>
+      <div class="procedure-card-foot">
+        <span class="admin-status status-<%= record.published? ? "published" : "pending" %>"><i></i><%= record.published? ? "Published" : "Hidden" %></span>
+        <% if prices.empty? %><span class="procedure-flag">No provider offers this</span><% end %>
+      </div>
+    <% end %>
+  <% end %>
+  <% if @records.empty? %><p class="admin-empty"><%= params[:q].present? ? "No procedure matches that search." : "No procedures yet." %></p><% end %>
+</div>

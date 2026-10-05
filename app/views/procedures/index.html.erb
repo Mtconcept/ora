@@ -1,0 +1,36 @@
+<% content_for :title, 'Treatments' %>
+<section class="lp-frame">
+  <div class="lp-frame__inner">
+    <header class="lp-head lp-head--ruled lp-head--page">
+      <p class="lp-chip">Treatments</p>
+      <h1 class="lp-title">What have you been <strong>putting off?</strong></h1>
+      <p class="lp-sub">Real prices from trusted clinics, and what each could cost you a month. Take your time.</p>
+    </header>
+    <div class="lp-catalog">
+      <%= turbo_frame_tag 'procedure_results', data: { turbo_action: 'advance' } do %>
+        <%= form_with url: procedures_path, method: :get, class: 'lp-filter', data: { turbo_frame: 'procedure_results', turbo_action: 'advance' } do |f| %>
+          <div class="lp-search lp-search--grow"><%= icon('search', size: 18) %><%= f.search_field :q, value: params[:q], placeholder: 'Search, e.g. braces', 'aria-label': 'Search procedures' %></div>
+          <%= f.select :category, options_for_select([['All care', '']] + Procedure::CATEGORIES.map { |c| [c,c] }, params[:category]), {}, 'aria-label': 'Care category', class: 'lp-select' %>
+          <%= f.select :sort, options_for_select([['Recommended', ''], ['Price: low to high', 'price']], params[:sort]), {}, 'aria-label': 'Sort procedures', class: 'lp-select' %>
+          <%= f.submit 'Find care', class: 'lp-btn lp-btn--dark lp-btn--sm' %>
+        <% end %>
+        <div class="lp-catalog__bar">
+          <nav class="lp-tabs" aria-label="Care categories">
+            <%= link_to 'All care', procedures_path, 'aria-current': (params[:category].blank? ? 'page' : nil) %>
+            <% Procedure::CATEGORIES.each do |category| %><%= link_to category, procedures_path(category: category), 'aria-current': (params[:category] == category ? 'page' : nil) %><% end %>
+          </nav>
+          <p class="lp-mono"><%= pluralize(@procedures.count, 'treatment') %></p>
+        </div>
+        <div class="procedure-grid lp-cards lp-cards--three" data-turbo-frame="_top"><%= render partial: 'shared/procedure', collection: @procedures %></div>
+        <% if @procedures.empty? %>
+          <div class="lp-empty">
+            <h2 class="lp-title lp-title--sm">A different <strong>starting point?</strong></h2>
+            <p class="lp-sub">Nothing matches that search. Try another word, or see every treatment.</p>
+            <%= link_to 'See every treatment', procedures_path, class: 'lp-btn lp-btn--dark' %>
+          </div>
+        <% end %>
+      <% end %>
+      <p class="lp-fine">Prices are demonstration estimates. Monthly figures assume 12 months and a 12% total financing charge; real offers, eligibility and clinical suitability may differ.</p>
+    </div>
+  </div>
+</section>

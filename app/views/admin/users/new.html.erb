@@ -1,0 +1,4 @@
+<% content_for :title, "Add team member" %><% content_for :page_label, "Users / Add team member" %>
+<div class="breadcrumb"><%= link_to "Users", admin_users_path %> / Add team member</div>
+<div class="admin-page-heading"><div><h1>Add team member</h1><p>Create secure admin access for a member of the Ora team.</p></div></div>
+<%= render "form", user: @user %>

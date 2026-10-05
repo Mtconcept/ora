@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+exec ./bin/rails server -b 127.0.0.1 -p "${PORT:-5000}" "$@"

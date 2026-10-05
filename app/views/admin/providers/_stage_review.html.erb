@@ -1,0 +1,61 @@
+<div class="stepper-panel">
+  <header class="stepper-panel-head">
+    <h2>Review</h2>
+    <p>Everything Ora holds on this provider, on one page. Publishing makes it visible to patients.</p>
+  </header>
+  <div class="stepper-panel-body">
+    <%
+      priced = @offerings.values
+      groups = [
+        [ "Organisation", [
+          [ provider.legal_name.present?, provider.legal_name.presence || "Registered name missing" ],
+          [ provider.registration_number.present?, provider.registration_number.present? ? "RC #{provider.registration_number}#{" · #{provider.registration_status}" if provider.registration_status.present?}" : "Registration number missing" ],
+          [ provider.verified_check?("corporate"), provider.verified_check?("corporate") ? "CAC verified" : "CAC not verified" ]
+        ] ],
+        [ "Marketplace", [
+          [ provider.name.present?, provider.name ],
+          [ provider.provider_type.present?, provider.provider_type.presence || "Provider type missing" ],
+          [ provider.phone.present? && provider.email.present?, [ provider.phone, provider.email ].compact_blank.join(" · ").presence || "Contact details missing" ],
+          [ provider.logo_url.present?, provider.logo_url.present? ? "Logo recorded" : "No logo" ]
+        ] ],
+        [ "Locations", @locations.any? ? @locations.map { |location| [ true, location.label ] } : [ [ false, "No locations recorded" ] ] ],
+        [ "Procedures", priced.any? ? [
+          [ true, pluralize(priced.size, "procedure") ],
+          [ priced.all? { |listing| listing.price.to_i.positive? }, "All priced" ],
+          [ priced.any? { |listing| listing.status == "active" }, "#{priced.count { |listing| listing.status == "active" }} active" ]
+        ] : [ [ false, "No procedures offered" ] ] ],
+        [ "Verification", Provider::CHECKS.map { |check| [ provider.verified_check?(check[:kind]), "#{check[:name]}: #{provider.verified_check?(check[:kind]) ? "verified" : "not verified"}" ] } ],
+        [ "Commercial", [
+          [ provider.bank_account_number.present?, provider.bank_account_number.present? ? "#{provider.bank_name} · #{provider.bank_account_number}" : "Settlement account missing" ],
+          [ provider.ora_fee_percent.present?, provider.ora_fee_percent.present? ? "Ora fee #{provider.ora_fee_percent}%" : "Ora fee not agreed" ],
+          [ provider.agreement_executed_at.present?, provider.agreement_executed_at.present? ? "Agreement executed #{provider.agreement_executed_at.strftime("%d %b %Y")}" : "Agreement not executed" ]
+        ] ]
+      ]
+    %>
+    <div class="review-grid">
+      <% groups.each do |title, rows| %>
+        <div class="review-group">
+          <h3><%= title %></h3>
+          <ul>
+            <% rows.each do |ok, text| %>
+              <li class="<%= ok ? "ok" : "missing" %>"><span><%= ok ? admin_icon("check", size: 14) : "○" %></span><%= text %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <footer class="stepper-panel-foot review-foot">
+    <% if provider.published? %>
+      <p class="admin-field-note">Published and visible to patients. Edits from any stage go live as soon as they are saved.</p>
+      <%= link_to "View public page", provider_path(provider), class: "button secondary small", target: "_blank", rel: "noopener" %>
+    <% else %>
+      <p class="admin-field-note"><%= provider.ready_to_publish? ? "Everything required is recorded." : provider.next_step[:message] %></p>
+      <div class="button-row">
+        <%= link_to "Save draft", admin_providers_path, class: "button secondary small" %>
+        <%= button_to "Publish provider", publish_admin_provider_path(provider), class: "button primary small", disabled: !provider.ready_to_publish?,
+                      form: { data: { turbo_confirm: "Publish #{provider.name} to the public directory?" } } %>
+      </div>
+    <% end %>
+  </footer>
+</div>

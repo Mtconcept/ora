@@ -1,0 +1,55 @@
+<div class="stepper-panel">
+  <header class="stepper-panel-head">
+    <h2>Services</h2>
+    <p>Tick what this provider offers and price it. Ora owns the procedure itself — its name, description, guidance and imagery — so this stage records only what changes from provider to provider.</p>
+  </header>
+  <%= form_with model: provider, scope: :provider, url: stage_admin_provider_path(provider, stage: "services"), method: :patch do |f| %>
+    <div class="stepper-panel-body">
+      <% if @catalogue.empty? %>
+        <p class="stepper-note">Ora's procedure catalogue is empty. <%= link_to "Add a procedure to the catalogue", admin_catalog_path("procedures"), class: "text-link" %> before offering one here.</p>
+      <% else %>
+        <p class="stepper-note">To change what a procedure <em>is</em>, edit it in <%= link_to "Procedures", admin_catalog_path("procedures"), class: "text-link" %>. Changing it there updates every provider that offers it.</p>
+        <div class="table-scroll"><table class="data-table services-table">
+          <thead><tr><th>Offer</th><th>Procedure</th><th>Starting price (₦)</th><th>Consultation (₦)</th><th>Where</th><th>Status</th></tr></thead>
+          <tbody>
+            <% @catalogue.group_by(&:category).each do |category, procedures| %>
+              <tr class="services-group"><td colspan="6"><%= category %></td></tr>
+              <% procedures.each do |procedure| %>
+                <% offering = @offerings[procedure.id] %>
+                <% locked = offering&.care_cases&.exists? %>
+                <tr class="<%= "offered" if offering %>">
+                  <%# A procedure a care journey depends on stays ticked: the box is disabled and a hidden field keeps it offered. %>
+                  <td><%= check_box_tag "services[#{procedure.id}][offered]", "1", offering.present?, id: "offer-#{procedure.id}", disabled: locked, aria: { label: "Offer #{procedure.name}" } %><%= hidden_field_tag "services[#{procedure.id}][offered]", "1", id: nil if locked %></td>
+                  <td><label for="offer-<%= procedure.id %>"><strong><%= procedure.name %></strong><small><%= procedure.summary.truncate(60) %></small></label></td>
+                  <td><%= number_field_tag "services[#{procedure.id}][price]", offering&.price || procedure.starting_price, min: 1, step: 1, aria: { label: "#{procedure.name} price" } %></td>
+                  <td><%= number_field_tag "services[#{procedure.id}][consultation_fee]", offering&.consultation_fee, min: 0, step: 1, placeholder: "Default", aria: { label: "#{procedure.name} consultation fee" } %></td>
+                  <td><%= select_tag "services[#{procedure.id}][provider_location_id]", options_from_collection_for_select(@locations, :id, :name, offering&.provider_location_id), include_blank: "All locations", aria: { label: "#{procedure.name} locations" } %></td>
+                  <td><%= select_tag "services[#{procedure.id}][status]", options_for_select(Listing::STATUSES.map { |status| [ status.humanize, status ] }, offering&.status || "active"), aria: { label: "#{procedure.name} status" } %></td>
+                </tr>
+                <% if locked %><tr class="services-locked"><td></td><td colspan="5">In use by a care journey, so it cannot be removed here.</td></tr><% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table></div>
+      <% end %>
+      <h3 class="panel-subhead">Consultations</h3>
+      <p class="admin-field-note">How Ora arranges a consultation with this provider. Leave a procedure's consultation fee blank to use the default below.</p>
+      <div class="form-columns">
+        <div>
+          <%= label_tag nil, "Consultation format" %>
+          <div class="checkbox-stack">
+            <% Provider::CONSULTATION_MODES.each do |value, name| %>
+              <label class="checkbox-option"><%= check_box_tag "provider[modes][]", value, provider.modes.include?(value), id: "mode-#{value}" %><span><%= name %></span></label>
+            <% end %>
+          </div>
+        </div>
+        <div><%= f.label :consultation_fee, "Default consultation fee (₦)" %><%= f.number_field :consultation_fee, min: 0, step: 1 %></div>
+        <div class="span-2"><%= f.label :booking_process, "Booking process" %><%= f.select :booking_process, Provider::BOOKING_PROCESSES.map { |value, name| [ name, value ] }, include_blank: "Not decided" %></div>
+      </div>
+    </div>
+    <footer class="stepper-panel-foot">
+      <p class="admin-field-note">Prices are what this provider charges. They are not quotes; a care journey records the final price after assessment.</p>
+      <%= f.submit "Save services", class: "button primary small" %>
+    </footer>
+  <% end %>
+</div>

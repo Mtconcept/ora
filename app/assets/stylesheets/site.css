@@ -1,0 +1,175 @@
+/* Site theme: brings the remaining customer pages (affordability, how it works, support, privacy,
+   mobile, My Care, sign-in and the journey steps) into the landing page's Qoves-style system without
+   rewriting their forms. It re-points the original tokens at the landing palette, then restyles the
+   shared components. Everything is scoped to body.landing, which the admin workspace never carries.
+   Element rules sit inside :where() so they stay below the lp- component classes in specificity. */
+
+body.landing {
+  --paper: #fff;
+  --cream: var(--q-card);
+  --ink: var(--q-ink);
+  --olive: var(--q-ink);
+  --muted: var(--q-text);
+  --line: #e9eef0;
+  --sage: var(--q-card);
+  --white: #fff;
+  --serif: var(--q-sans);
+  --sans: var(--q-sans);
+}
+
+/* Type */
+:where(body.landing) :is(h1, h2, h3) { font-family: var(--q-sans); font-weight: 400; color: var(--q-ink); }
+:where(body.landing) :is(h1, h2) { letter-spacing: calc(-.03em - 1px); }
+:where(body.landing) h3 { letter-spacing: -.02em; }
+:where(body.landing) :is(h1, h2) em { font-style: normal; font-weight: 400; color: var(--q-accent); }
+:where(body.landing) p { color: var(--q-text); line-height: 1.6; }
+body.landing hr { background: var(--q-line); }
+
+/* Labels: section eyebrows become mono chips, the rest plain mono captions */
+body.landing .eyebrow { font-family: var(--q-mono); font-size: 11px; font-weight: 400; line-height: 14px; letter-spacing: -.05px; text-transform: uppercase; color: var(--q-slate); }
+body.landing :is(.page-heading, .section-heading, .closing-cta, .onboarding-card, .calculator-result, .mobile-launch > div:first-child, .form-card) > .eyebrow,
+body.landing .section-heading > div > .eyebrow { display: inline-flex; width: fit-content; padding: 3px 8px; border: 1px solid var(--q-chip-line); border-radius: 99px; background: #fff; font-size: 12px; line-height: 12px; color: var(--q-accent); }
+body.landing .page-heading > .eyebrow { margin: 0 auto; }
+
+/* Buttons and links */
+body.landing .button { min-height: 48px; gap: 10px; border-radius: 9999px; padding: 12px 24px; font-size: 15px; font-weight: 500; line-height: 20px; }
+body.landing .button:hover { transform: none; }
+body.landing .button.primary { background: var(--q-ink); color: #fff; }
+body.landing .button.primary:hover { background: #33464e; }
+body.landing .button.outline { border-color: #e3e8ea; background: #fff; color: var(--q-ink); }
+body.landing .button.outline:hover { border-color: var(--q-accent-2); background: var(--q-card); }
+body.landing .button.cream { background: #fff; color: var(--q-ink); }
+body.landing .button.small { min-height: 40px; padding: 8px 20px; font-size: 14px; }
+body.landing .button.danger { color: #9b4a3a; }
+body.landing .text-link { gap: 8px; padding-bottom: 2px; border-bottom: 1px solid var(--q-accent-3); font-size: 14px; font-weight: 400; color: var(--q-ink); }
+body.landing .text-link:hover, body.landing .quiet-link:hover { color: var(--q-slate); }
+body.landing .quiet-link { font-size: 14px; color: var(--q-text); }
+body.landing .fine-print { font-size: 12px !important; line-height: 18px !important; color: var(--q-muted) !important; }
+
+/* Forms */
+body.landing label:not(.radio-option):not(.checkbox-option) { font-size: 13px; font-weight: 500; color: var(--q-ink); }
+body.landing :is(input:not([type=submit]):not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select) { border-color: #e3e8ea; border-radius: 10px; background: #fff; color: var(--q-ink); font-size: 15px; }
+body.landing :is(input, textarea, select):focus { border-color: var(--q-accent) !important; box-shadow: 0 0 0 4px rgba(154, 174, 181, .18) !important; }
+body.landing input[type=range] { accent-color: var(--q-ink); }
+body.landing :is(input[type=checkbox], input[type=radio]) { accent-color: var(--q-ink); }
+body.landing .form-errors, body.landing .flash-alert { border-radius: 12px; background: #fbf1ec; border-color: #f0d9cd; color: #8a4f38; }
+body.landing .flash { border: 1px solid var(--q-line); border-radius: 12px; background: #fff; color: var(--q-ink); box-shadow: 0 16px 40px -20px rgba(35, 49, 55, .35); font-size: 14px; }
+
+/* Page structure: the framed grid with hairline rules */
+body.landing.is-inner main { max-width: 1392px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+body.landing.is-inner main > :is(section, div):not(.lp-frame):not(.lp-rule) { border-left: 1px solid var(--q-line); border-right: 1px solid var(--q-line); }
+body.landing.is-inner main > :is(section, div):not(.lp-frame):not(.lp-rule) + :is(section, div):not(.lp-rule) { border-top: 1px solid var(--q-line); }
+body.landing.is-inner main > .lp-frame { margin: 0 -16px; }
+body.landing.is-inner main > .lp-rule { margin: 0 -16px; }
+body.landing .section { max-width: none; padding: 64px 40px; }
+body.landing .muted-section { background: var(--q-card); }
+body.landing .page-heading { padding: 72px 24px 48px; }
+body.landing .page-heading h1 { margin: 16px auto 16px; max-width: 760px; font-size: clamp(40px, 4.4vw, 56px); line-height: 1.1; }
+body.landing .page-heading p { max-width: 608px; font-size: 16px; line-height: 24px; }
+body.landing .section-heading h2 { font-size: clamp(32px, 3.4vw, 44px); line-height: 1.1; }
+/* Narrow sections span the frame; only their content keeps the reading width. */
+body.landing .section.narrow { max-width: none; margin: 0; padding-left: max(40px, calc((100% - 760px) / 2)); padding-right: max(40px, calc((100% - 760px) / 2)); }
+
+/* Cards and panels */
+body.landing :is(.form-card, .calculator-card, .sticky-card, .care-card) { border: 1px solid var(--q-line); border-radius: 12px; background: var(--q-card); }
+body.landing .form-card h2, body.landing .calculator-result h2 { font-size: clamp(32px, 3.4vw, 48px); line-height: 1.1; }
+body.landing .note { border: 1px solid var(--q-line); border-radius: 12px; background: #fff; color: var(--q-slate); }
+body.landing .note p { color: var(--q-text); font-size: 13px !important; }
+body.landing .empty-state { border-color: #e3e8ea; border-radius: 12px; }
+body.landing .subtle-tag, body.landing .badge { border: 1px solid var(--q-chip-line); border-radius: 99px; background: #fff; font-family: var(--q-mono); font-size: 11px !important; line-height: 16px; text-transform: uppercase; color: var(--q-slate); }
+body.landing .badge-pending, body.landing .badge-qualification, body.landing .badge-medical_review { background: #fbf6ea; border-color: #efe3c4; color: #8a6d2c; }
+body.landing .badge-cancelled, body.landing .badge-unavailable, body.landing .badge-not_approved { background: #fbf1ec; border-color: #f0d9cd; color: #8a4f38; }
+body.landing .badge-completed, body.landing .badge-funded, body.landing .badge-approved, body.landing .badge-preapproved { background: #eef6f1; border-color: #d3e8da; color: #2f6b46; }
+body.landing .category-dental:is(.procedure-art, .detail-art, .care-card-icon) { background: linear-gradient(160deg, #cddbe1, #9aaeb5); color: #fff; }
+body.landing .category-vision:is(.procedure-art, .detail-art, .care-card-icon) { background: linear-gradient(160deg, #aec2c9, #798f97); color: #fff; }
+body.landing .category-cosmetic:is(.procedure-art, .detail-art, .care-card-icon) { background: linear-gradient(160deg, #b2c1c8, #8ea3ab); color: #fff; }
+body.landing .care-card-icon { border-radius: 12px; }
+
+/* Affordability */
+body.landing .calculator-layout { max-width: none; gap: 56px; }
+body.landing .calculator-card { padding: 32px; }
+body.landing .budget-input { border-bottom-color: #e3e8ea; }
+body.landing .budget-input > span { color: var(--q-accent); }
+body.landing .budget-input input { font-family: var(--q-sans) !important; letter-spacing: -.03em; }
+body.landing .range-labels { font-family: var(--q-mono); font-size: 11px; color: var(--q-muted); }
+body.landing .calculator-result .note { border: 0; border-top: 1px solid var(--q-line); border-radius: 0; background: none; }
+
+/* How it works */
+body.landing .how-grid { gap: 0; padding: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+body.landing .how-grid > article { padding: 40px; border-right: 1px solid var(--q-line); border-bottom: 1px solid var(--q-line); }
+body.landing .how-grid > article:nth-child(3n) { border-right: 0; }
+body.landing .how-grid > article:nth-last-child(-n + 3) { border-bottom: 0; }
+body.landing .how-number { margin-bottom: 24px; padding: 0; border: 0; font-family: var(--q-mono); font-size: 12px; color: var(--q-accent); }
+body.landing .how-number::before { content: '['; }
+body.landing .how-number::after { content: ']'; }
+body.landing .how-grid h3 { font-size: 24px; line-height: 30px; }
+body.landing .how-grid p { font-size: 15px; line-height: 22px; }
+body.landing .closing-cta { padding: 96px 24px; background-color: #aec2c9; background-image: repeating-radial-gradient(circle at 50% 115%, rgba(255, 255, 255, .16) 0 1px, transparent 1px 72px), radial-gradient(120% 90% at 50% 0%, #cddbe1 0%, #aec2c9 42%, #798f97 100%); }
+body.landing .closing-cta h2 { color: #fff; font-size: clamp(32px, 3.6vw, 48px); }
+body.landing .closing-cta > .eyebrow { border: 2px solid rgba(242, 242, 242, .1); background: rgba(255, 255, 255, .1); color: #fff; }
+body.landing .closing-cta .button.primary { background: #fff; color: var(--q-ink); }
+
+/* Mobile waitlist */
+body.landing .mobile-launch { padding: 80px 8%; min-height: 0; background: radial-gradient(ellipse at 80% 60%, #e3ebee, transparent 55%); }
+body.landing .mobile-launch h1 { font-size: clamp(44px, 5vw, 68px); line-height: 1.05; }
+body.landing .phone-mock { border-color: var(--q-ink); background: #fff; box-shadow: 25px 30px 60px rgba(35, 49, 55, .18); }
+body.landing .phone-speaker, body.landing .phone-bar { background: var(--q-ink); }
+
+/* My Care */
+body.landing .care-heading { padding: 64px 40px 40px; background: var(--q-card); text-align: left; }
+body.landing .care-heading > :is(.eyebrow, h1, p) { margin-left: 0; margin-right: 0; }
+body.landing .care-heading h1 { font-size: clamp(40px, 4.4vw, 56px); }
+body.landing .care-card:hover { border-color: var(--q-accent-2); }
+body.landing .care-card-meta, body.landing .details-list dt, body.landing .activity-item small { color: var(--q-muted); }
+body.landing .details-list dd, body.landing .activity-item p { color: var(--q-ink); }
+body.landing .activity-dot { background: var(--q-accent); }
+body.landing .timeline-step > span { border-color: #e3e8ea; color: var(--q-muted); }
+body.landing .timeline-step.reached > span { background: var(--q-ink); border-color: var(--q-ink); color: #fff; }
+body.landing .timeline-step > small { color: var(--q-muted); }
+body.landing .timeline-step.reached > small { color: var(--q-ink); }
+body.landing :is(.terms-copy, .result-summary, .demo-code, .selected-care) { border: 1px solid var(--q-line); border-radius: 12px; background: var(--q-card); }
+body.landing .result-summary > span { border-color: var(--q-line); color: var(--q-text); }
+body.landing :is(.result-summary strong, .result-summary b, .selected-care > b) { color: var(--q-ink); }
+body.landing .result-icon { background: var(--q-accent-3); color: var(--q-ink); }
+
+/* Sign-in and the guided journey: a slate backdrop with a white card */
+body.landing.immersive-body { background-color: #798f97; background-image: repeating-radial-gradient(circle at 50% 120%, rgba(255, 255, 255, .1) 0 1px, transparent 1px 80px), radial-gradient(120% 90% at 50% 0%, #aec2c9 0%, #8ea3ab 45%, #5f747c 100%); }
+body.landing.immersive-body::before { display: none; }
+body.landing .immersive-header { height: 80px; justify-content: space-between; padding: 0 var(--q-gutter); border-bottom-color: rgba(255, 255, 255, .18); color: #fff; }
+body.landing .immersive-header .lp-logo { color: #fff; }
+body.landing .immersive-header > .quiet-link { position: static; color: #fff; font-size: 14px; }
+body.landing .journey-progress { top: 79px; }
+body.landing .journey-progress > span { background: #fff; }
+body.landing .journey-counter { top: 31px; left: 50%; right: auto; transform: translateX(-50%); font-family: var(--q-mono); font-size: 12px; color: rgba(255, 255, 255, .8); }
+body.landing .onboarding-card { border-radius: 16px; background: #fff; box-shadow: 0 40px 80px -32px rgba(16, 24, 28, .45); }
+body.landing .onboarding-card h1 { font-size: 36px; line-height: 1.1; }
+body.landing .onboarding-card input:not([type=submit]):not([type=checkbox]):not([type=radio]) { background: #fff; }
+body.landing .radio-option { border-color: #e3e8ea; border-radius: 12px; font-size: 14px; }
+body.landing .radio-option:hover { background: var(--q-card); }
+body.landing .radio-option:has(input:checked) { border-color: var(--q-ink); background: var(--q-card); }
+body.landing .checkbox-option { font-size: 13px; }
+body.landing .pay-choice { margin: 20px 0 0; padding: 0; border: 0; }
+body.landing .pay-choice legend { padding: 0; font-size: 13px; font-weight: 500; color: var(--q-ink); }
+body.landing .pay-choice .option-list { margin: 10px 0 0; }
+body.landing .radio-option > span { display: flex; flex-direction: column; gap: 2px; }
+body.landing .radio-option strong { font-weight: 500; color: var(--q-ink); }
+body.landing .radio-option small { font-size: 12px; line-height: 16px; color: var(--q-muted); }
+body.landing .immersive-caption { font-family: var(--q-mono); font-size: 11px; letter-spacing: 0; color: rgba(255, 255, 255, .85); }
+body.landing :is(.form-footnote, .demo-note) { color: var(--q-muted) !important; }
+
+@media (max-width: 899px) {
+  body.landing .how-grid { grid-template-columns: 1fr; }
+  body.landing .how-grid > article, body.landing .how-grid > article:nth-child(3n) { border-right: 0; border-bottom: 1px solid var(--q-line); }
+  body.landing .how-grid > article:last-child { border-bottom: 0; }
+}
+@media (max-width: 699px) {
+  body.landing .section, body.landing .section.narrow { padding: 40px 16px; }
+  body.landing .page-heading { padding: 48px 16px 32px; }
+  body.landing .care-heading { padding: 40px 16px 32px; }
+  body.landing.is-inner main { padding-left: 0; padding-right: 0; }
+  body.landing.is-inner main > :is(.lp-frame, .lp-rule) { margin: 0; }
+  body.landing .how-grid > article { padding: 28px 16px; }
+  body.landing .immersive-header { height: 64px; padding: 0 16px; }
+  body.landing .journey-progress { top: 63px; }
+  body.landing .journey-counter { top: 24px; }
+}

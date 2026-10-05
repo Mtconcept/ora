@@ -1,0 +1,4 @@
+<% content_for :title, "Add procedure" %><% content_for :page_label, "Procedures / New" %>
+<div class="breadcrumb"><%= link_to "Procedures", admin_catalog_path(@kind) %> / New</div>
+<div class="admin-page-heading"><div><h1>Add procedure</h1><p>Name it, price it, and decide whether patients can see it. Providers attach their own prices afterwards.</p></div></div>
+<%= render "form" %>

@@ -1,0 +1,43 @@
+<% content_for :title, 'Clinics' %>
+<section class="lp-frame">
+  <div class="lp-frame__inner">
+    <header class="lp-head lp-head--ruled lp-head--page">
+      <p class="lp-chip">Clinics on Ora</p>
+      <h1 class="lp-title">Good care starts with <strong>the right hands</strong></h1>
+      <p class="lp-sub">Meet the clinics behind your care. Every one of them passed Ora’s checks before it appeared here.</p>
+      <%= form_with url: providers_path, method: :get, class: 'lp-search' do |f| %>
+        <%= icon('search', size: 18) %>
+        <%= f.search_field :q, value: params[:q], placeholder: 'Search by clinic or area', 'aria-label': 'Search clinics' %>
+        <%= f.submit 'Search', class: 'lp-btn lp-btn--dark lp-btn--sm' %>
+      <% end %>
+    </header>
+    <% if @providers.any? %>
+      <div class="lp-cards lp-cards--two">
+        <% @providers.each do |provider| %>
+          <%= link_to provider_path(provider), class: "lp-card lp-card--#{provider.specialty.to_s.downcase} lp-provider" do %>
+            <div class="lp-card__visual">
+              <div class="lp-card__labels"><span><%= provider.specialty.to_s.upcase %></span><span><%= pluralize(@listing_counts.fetch(provider.id, 0), 'treatment').upcase %></span></div>
+              <span class="lp-provider__mono"><%= provider.name.split.map(&:first).first(2).join %></span>
+              <span class="lp-card__go"><%= icon('diagonal', size: 18) %></span>
+            </div>
+            <div class="lp-card__body">
+              <h3><%= provider.name %></h3>
+              <p class="lp-provider__place"><%= icon('pin', size: 15) %> <%= provider.location %></p>
+              <p><%= provider.description %></p>
+              <div class="lp-provider__foot">
+                <span class="lp-tag"><%= provider.verified? ? 'Checked by Ora' : 'Checks in progress' %></span>
+                <% if (floor = @price_floors[provider.id]) %><span class="lp-card__price">From <%= money(floor) %></span><% end %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="lp-empty">
+        <h2 class="lp-title lp-title--sm">No clinic <strong>by that name, yet</strong></h2>
+        <p class="lp-sub">Try another name or area, or see every clinic on Ora.</p>
+        <%= link_to 'See all clinics', providers_path, class: 'lp-btn lp-btn--dark' %>
+      </div>
+    <% end %>
+  </div>
+</section>

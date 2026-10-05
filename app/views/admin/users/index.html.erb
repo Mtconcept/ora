@@ -1,0 +1,40 @@
+<% content_for :title, "Users" %><% content_for :page_label, "Users" %>
+<div class="admin-page-heading">
+  <div><h1>Users</h1><p>Review patient accounts and manage team access across Ora.</p></div>
+  <% if current_admin.super_admin? %><%= link_to new_admin_user_path, class: "button primary small" do %><%= admin_icon("plus", size: 16) %> Add team member<% end %><% end %>
+</div>
+
+<div class="admin-panel">
+  <div class="admin-toolbar">
+    <div class="admin-filter-tabs" aria-label="User filters">
+      <%= link_to "All users", admin_users_path(q: params[:q]), class: params[:role].blank? && params[:status].blank? && params[:filter].blank? ? "active" : "" %>
+      <%= link_to "Active", admin_users_path(status: "active", q: params[:q]), class: params[:status] == "active" ? "active" : "" %>
+      <%= link_to "Suspended", admin_users_path(status: "suspended", q: params[:q]), class: params[:status] == "suspended" ? "active" : "" %>
+      <%= link_to "Admins", admin_users_path(role: "admin", q: params[:q]), class: params[:role] == "admin" ? "active" : "" %>
+      <%= link_to "Customers", admin_users_path(role: "customer", q: params[:q]), class: params[:role] == "customer" ? "active" : "" %>
+      <%= link_to "Recent", admin_users_path(filter: "recent", q: params[:q]), class: params[:filter] == "recent" ? "active" : "" %>
+    </div>
+    <%= form_with url: admin_users_path, method: :get, class: "admin-search", data: { turbo_frame: "_top" } do |form| %>
+      <%= hidden_field_tag :role, params[:role] if params[:role].present? %><%= hidden_field_tag :status, params[:status] if params[:status].present? %><%= hidden_field_tag :filter, params[:filter] if params[:filter].present? %>
+      <%= admin_icon("search", size: 16) %><%= form.search_field :q, value: params[:q], placeholder: "Search users", aria: { label: "Search users" } %>
+    <% end %>
+  </div>
+
+  <div class="table-scroll"><table class="admin-user-table">
+    <thead><tr><th><%= admin_sort_link("ID", "id") %></th><th><%= admin_sort_link("Name", "name") %></th><th><%= admin_sort_link("Email", "email") %></th><th>Phone number</th><th><%= admin_sort_link("Role", "role") %></th><th><%= admin_sort_link("Status", "status") %></th><th><%= admin_sort_link("Joined", "joined") %></th><th><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+      <% @users.each do |user| %><tr class="clickable-row" tabindex="0" data-controller="row-link" data-row-link-url-value="<%= admin_user_path(user) %>" data-action="click->row-link#navigate keydown->row-link#navigateWithKeyboard">
+        <td class="admin-id"><%= user.id %></td>
+        <td><%= link_to admin_user_path(user), class: "user-cell" do %><span class="table-avatar"><%= user.name.first.upcase %></span><strong><%= user.name %></strong><% end %></td>
+        <td><%= user.email.presence || "—" %></td><td><%= user.phone %></td>
+        <td><span class="admin-role role-<%= user.role %>"><%= user.role.humanize %></span></td>
+        <td><span class="admin-status status-<%= user.status %>"><i></i><%= user.status.humanize %></span></td>
+        <td><%= user.created_at.strftime("%d %b %Y") %></td>
+        <td class="row-actions"><details class="admin-action-menu" data-controller="action-menu" data-action="toggle->action-menu#toggle"><summary aria-label="Actions for <%= user.name %>"><%= admin_icon("more") %></summary><div data-action-menu-target="menu"><%= link_to "View", admin_user_path(user) %><%= link_to "Edit", edit_admin_user_path(user) %><% if user.status == "suspended" %><%= button_to "Reactivate", reactivate_admin_user_path(user), method: :post %><% else %><%= button_to "Suspend", suspend_admin_user_path(user), method: :post unless user == current_admin %><% end %></div></details></td>
+      </tr><% end %>
+      <% if @users.empty? %><tr><td colspan="8" class="admin-empty">No users match this view.</td></tr><% end %>
+    </tbody>
+  </table></div>
+  <% total_pages = (@total_count.to_f / @per_page).ceil %>
+  <div class="admin-pagination"><span>Showing <%= @total_count.zero? ? 0 : ((@page - 1) * @per_page) + 1 %>–<%= [@page * @per_page, @total_count].min %> of <%= @total_count %></span><div><%= link_to "Previous", url_for(request.query_parameters.merge(page: @page - 1)), class: @page <= 1 ? "disabled" : "" %><span>Page <%= @page %> of <%= [total_pages, 1].max %></span><%= link_to "Next", url_for(request.query_parameters.merge(page: @page + 1)), class: @page >= total_pages ? "disabled" : "" %></div></div>
+</div>

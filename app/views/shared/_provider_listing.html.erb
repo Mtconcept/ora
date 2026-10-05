@@ -1,0 +1,10 @@
+<li class="lp-offer">
+  <span class="lp-offer__mono lp-card--<%= listing.provider.specialty.to_s.downcase %>"><%= listing.provider.name.split.map(&:first).first(2).join %></span>
+  <div class="lp-offer__info">
+    <h3><%= link_to listing.provider.name, provider_path(listing.provider) %></h3>
+    <p class="lp-provider__place"><%= icon('pin', size: 15) %> <%= listing.provider.location %></p>
+    <span class="lp-tag"><%= listing.provider.verified? ? 'Checked by Ora' : 'Demo clinic · Checks in progress' %></span>
+  </div>
+  <div class="lp-offer__figure"><p class="lp-mono">Their price</p><p class="lp-offer__price"><%= money(listing.price) %><span>or about <%= money(monthly(listing.price)) %> a month</span></p></div>
+  <div class="lp-offer__actions"><%= link_to start_journey_path(listing_id: listing.id), class: 'lp-btn lp-btn--dark lp-btn--sm' do %>Start my care journey <%= icon('arrow', size: 16) %><% end %></div>
+</li>

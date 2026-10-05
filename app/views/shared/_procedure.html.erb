@@ -1,0 +1,15 @@
+<article class="procedure-card lp-card lp-card--compact lp-card--<%= procedure.category.downcase %>">
+  <%= link_to procedure_path(procedure), class: 'lp-card__visual', data: { turbo_frame: '_top' }, 'aria-label': "Explore #{procedure.name}" do %>
+    <span class="lp-card__labels"><span><%= procedure.category.upcase %></span><span>FROM <%= money(procedure.starting_price) %></span></span>
+    <%= icon(category_icon(procedure.category), size: 96) %>
+    <span class="lp-card__go"><%= icon('diagonal', size: 18) %></span>
+  <% end %>
+  <div class="lp-card__body">
+    <h3><%= link_to procedure.name, procedure_path(procedure), data: { turbo_frame: '_top' } %></h3>
+    <p><%= procedure.summary %></p>
+    <dl class="lp-card__prices">
+      <div><dt>Price from</dt><dd><%= money(procedure.starting_price) %></dd></div>
+      <div><dt>Or monthly, about</dt><dd><%= money(monthly(procedure.starting_price)) %></dd></div>
+    </dl>
+  </div>
+</article>

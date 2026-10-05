@@ -1,0 +1,56 @@
+<div class="stepper-panel">
+  <header class="stepper-panel-head">
+    <h2>Verification</h2>
+    <p>A checklist, not another form. Ora tries an identifier lookup first; where none answers, record what operations confirmed by hand and the evidence behind it.</p>
+  </header>
+  <div class="stepper-panel-body">
+    <% if @check&.errors&.any? %><%= render "shared/errors", object: @check %><% end %>
+    <div class="check-list">
+      <% Provider::CHECKS.each do |definition| %>
+        <% kind = definition[:kind] %>
+        <% record = provider.check(kind) %>
+        <% rejected = @check if @check&.kind == kind && @check&.errors&.any? %>
+        <% status = record&.status || "pending" %>
+        <% bank_ready = kind != "bank" || provider.bank_account_number.present? %>
+        <details class="check-row <%= status %>" <%= "open" if rejected %>>
+          <summary>
+            <span class="check-marker"><%= status == "verified" ? admin_icon("check", size: 14) : "" %></span>
+            <span class="check-copy">
+              <strong><%= definition[:name] %></strong>
+              <small><%= definition[:blurb] %></small>
+              <% if record&.verified? %><small class="check-trail">Recorded <%= record.source == "lookup" ? "by lookup" : "manually" %> by <%= record.verified_by&.name || "operations" %> on <%= record.verified_at&.strftime("%d %b %Y") %><%= ", reference #{record.reference}" if record.reference.present? %></small><% end %>
+            </span>
+            <span class="check-status"><span class="admin-status status-<%= status == "verified" ? "active" : status %>"><i></i><%= status == "verified" ? "Verified" : status == "failed" ? "Failed" : "Not verified" %></span><%= admin_icon("chevron", size: 16) %></span>
+          </summary>
+          <div class="check-body">
+            <% if kind == "bank" && !bank_ready %>
+              <p class="stepper-note">Record the settlement account in <%= link_to "Commercial", stage_admin_provider_path(provider, stage: "commercial"), class: "text-link" %> first, then verify it here.</p>
+            <% else %>
+              <% if kind.in?(%w[corporate facility bank]) %>
+                <%= render "lookup", provider: provider, stage: "verification", kind: kind == "corporate" ? "organisation" : kind,
+                           result: (@lookup if @check.nil? || @check.kind == kind), query: kind == "bank" ? provider.bank_account_number : kind == "facility" ? provider.facility_registration : provider.registration_number,
+                           prompt: kind == "corporate" ? "CAC registration number" : kind == "facility" ? "Facility registration or licence number" : "Settlement account number",
+                           placeholder: kind == "bank" ? "0123456789" : "Registration number", action: "Attempt verification" %>
+              <% end %>
+              <%= form_with url: checks_admin_provider_path(provider), scope: :check, id: "check-#{kind}" do |f| %>
+                <%= hidden_field_tag :kind, kind %>
+                <div class="form-columns">
+                  <div><%= f.label :status, "Outcome" %><%= f.select :status, [ [ "Verified", "verified" ], [ "Not verified", "pending" ], [ "Failed", "failed" ] ], selected: rejected&.status || status %></div>
+                  <div><%= f.label :reference, "Reference recorded" %><%= f.text_field :reference, value: rejected&.reference || record&.reference %></div>
+                  <div class="span-2"><%= f.label :evidence, "Reason / evidence" %><%= f.text_area :evidence, value: rejected&.evidence || record&.evidence, rows: 2, placeholder: "Facility licence physically reviewed during the onboarding meeting on 12 September." %></div>
+                </div>
+                <%= hidden_field_tag "check[source]", "manual" %>
+                <div class="admin-form-actions"><%= f.submit "Record #{definition[:name].downcase} check", class: "button secondary small" %></div>
+              <% end %>
+              <p class="admin-field-note">A manual pass has to say what was seen. That note is the audit trail behind this provider going live.</p>
+            <% end %>
+          </div>
+        </details>
+      <% end %>
+    </div>
+  </div>
+  <footer class="stepper-panel-foot">
+    <p class="admin-field-note">Corporate, facility and contact must all pass before publishing. Bank is recorded alongside settlement.</p>
+    <%= link_to stage_admin_provider_path(provider, stage: "commercial"), class: "button secondary small" do %>Continue to commercial<%= admin_icon("chevron", size: 16) %><% end %>
+  </footer>
+</div>

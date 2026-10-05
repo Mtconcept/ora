@@ -1,0 +1,12 @@
+<% content_for :title, "Patients" %><% content_for :page_label, "Patients" %>
+<div class="admin-page-heading"><div><h1>Patients</h1><p>Everyone who has registered, started a care journey, or contacted Ora.</p></div></div>
+<div class="admin-panel">
+  <div class="admin-toolbar">
+    <div class="admin-filter-tabs"><%= link_to "All", admin_customers_path(q: params[:q]), class: params[:source].blank? ? "active" : "" %><% ["Registered", "Care journey", "Inquiry", "Mobile waitlist"].each do |source| %><%= link_to source, admin_customers_path(source: source, q: params[:q]), class: params[:source] == source ? "active" : "" %><% end %></div>
+    <%= form_with url: admin_customers_path, method: :get, class: "admin-search" do |form| %><%= hidden_field_tag :source, params[:source] if params[:source].present? %><%= admin_icon("search", size: 16) %><%= form.search_field :q, value: params[:q], placeholder: "Search patients", aria: { label: "Search patients" } %><% end %>
+  </div>
+  <div class="table-scroll"><table class="admin-user-table"><thead><tr><th>Patient</th><th>Email</th><th>Phone number</th><th>Source</th><th>Status</th><th>Activity</th><th>Last seen</th></tr></thead><tbody>
+    <% @contacts.each do |contact| %><% row_path = contact[:kind] == "user" ? admin_customer_path(contact[:id]) : admin_inbox_path %><tr class="clickable-row" tabindex="0" data-controller="row-link" data-row-link-url-value="<%= row_path %>" data-action="click->row-link#navigate keydown->row-link#navigateWithKeyboard"><td><% if contact[:kind] == "user" %><%= link_to admin_customer_path(contact[:id]), class: "user-cell" do %><span class="table-avatar"><%= contact[:name].first.upcase %></span><strong><%= contact[:name] %></strong><% end %><% else %><span class="user-cell"><span class="table-avatar"><%= contact[:name].first.upcase %></span><strong><%= contact[:name] %></strong></span><% end %></td><td><%= contact[:email] || "—" %></td><td><%= contact[:phone] || "—" %></td><td><span class="admin-source"><%= contact[:source] %></span></td><td><span class="admin-status status-<%= contact[:status] %>"><i></i><%= contact[:status].to_s.humanize %></span></td><td><%= contact[:activity] %></td><td><%= time_ago_in_words(contact[:last_seen]) %> ago</td></tr><% end %>
+    <% if @contacts.empty? %><tr><td colspan="7" class="admin-empty">No patients match this view.</td></tr><% end %>
+  </tbody></table></div>
+</div>

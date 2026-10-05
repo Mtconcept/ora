@@ -1,0 +1,31 @@
+<% content_for :title, "Providers" %><% content_for :page_label, "Providers" %>
+<div class="admin-page-heading">
+  <div><h1>Providers</h1><p>The clinics Ora works with, and how far each one is through onboarding.</p></div>
+  <%= link_to new_admin_provider_path, class: "button primary small" do %><%= admin_icon("plus", size: 16) %> Add provider<% end %>
+</div>
+<div class="admin-panel">
+  <div class="admin-toolbar">
+    <div class="admin-filter-tabs">
+      <%= link_to "All (#{@published_count + @draft_count})", admin_providers_path, class: (params[:state].blank? ? "active" : nil) %>
+      <%= link_to "Published (#{@published_count})", admin_providers_path(state: "published"), class: (params[:state] == "published" ? "active" : nil) %>
+      <%= link_to "Drafts (#{@draft_count})", admin_providers_path(state: "draft"), class: (params[:state] == "draft" ? "active" : nil) %>
+    </div>
+  </div>
+  <div class="table-scroll"><table class="data-table">
+    <thead><tr><th>Provider</th><th>Type</th><th>Locations</th><th>Procedures</th><th>Stage</th><th>State</th><th><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+      <% @providers.each do |provider| %>
+        <tr>
+          <td><strong><%= provider.name %></strong><small><%= provider.legal_name.presence || provider.slug %></small></td>
+          <td><%= provider.provider_type.presence || "—" %></td>
+          <td><%= provider.provider_locations.size.zero? ? "—" : provider.provider_locations.map(&:name).to_sentence %></td>
+          <td><%= provider.listings.size %></td>
+          <td><%= provider.published? ? "Complete" : provider_stage_name(provider.next_step[:section]) %></td>
+          <td><span class="admin-status status-<%= provider.published? ? "published" : "pending" %>"><i></i><%= provider.published? ? "Published" : "Draft" %></span></td>
+          <td class="row-actions"><%= link_to stage_admin_provider_path(provider, stage: provider.next_step[:section]), class: "row-chevron", aria: { label: "Open #{provider.name}" } do %><%= admin_icon("chevron", size: 16) %><% end %></td>
+        </tr>
+      <% end %>
+      <% if @providers.empty? %><tr><td colspan="7" class="admin-empty">No providers in this view.</td></tr><% end %>
+    </tbody>
+  </table></div>
+</div>

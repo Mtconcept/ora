@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= content_for?(:title) ? "#{yield(:title)} — Ora" : 'Ora — Care, on your terms.' %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A more considered way to find planned healthcare, understand your options, and take your next step with confidence.">
+  <%= csrf_meta_tags %><%= csp_meta_tag %>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <%= stylesheet_link_tag :app, 'data-turbo-track': 'reload' %>
+  <%= javascript_importmap_tags %>
+</head>
+<% home = controller_name == 'pages' && action_name == 'home' %>
+<% immersive = controller_name == 'journey' || controller_name == 'sessions' %>
+<body class="landing <%= home ? 'is-home' : immersive ? 'immersive-body' : 'is-inner' %>" data-controller="navigation">
+  <a href="#main" class="skip-link">Skip to content</a>
+  <% if immersive %>
+    <header class="immersive-header"><%= link_to root_path, class: 'lp-logo', 'aria-label': 'Ora home' do %><%= ora_mark %><span>ora</span><% end %><%= link_to 'Close ×', procedures_path, class: 'quiet-link' %></header>
+  <% else %>
+    <%= render 'shared/landing_header' %>
+  <% end %>
+  <%= render 'shared/flash' %>
+  <main id="main"><%= yield %></main>
+  <%= render 'shared/landing_footer' unless immersive %>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<% content_for :title, "Overview" %><% content_for :page_label, "Overview" %>
+<div class="admin-page-heading">
+  <div><h1>Overview</h1><p>What needs attention, what is coming, and what just changed.</p></div>
+  <%= link_to "View care journeys", admin_cases_path, class: "button primary small" %>
+</div>
+<div class="admin-metrics">
+  <% [[@attention_count, "Needs attention", "Journeys waiting on us", "attention", admin_cases_path], [@active_count, "Active journeys", "Across the care pathway", "journeys", admin_cases_path], [@review_count, "Finance reviews", "Awaiting a decision", "pricing", admin_cases_path], [@customer_count, "Patients", "Registered profiles", "customers", admin_customers_path]].each do |count, title, description, glyph, destination| %>
+    <%= link_to destination, class: "metric" do %><div><span><%= title %></span><%= admin_icon(glyph, size: 20) %></div><strong><%= count %></strong><small><%= description %></small><% end %>
+  <% end %>
+</div>
+<%= section_label "Needs attention" %>
+<div class="admin-panel">
+  <div class="panel-heading"><div><h2>Waiting on the care desk</h2><p>Journeys where the next step is ours, not the patient’s.</p></div><%= link_to "All journeys", admin_cases_path, class: "text-link" %></div>
+  <% if @attention.any? %>
+    <div class="panel-body attention-list">
+      <% @attention.first(6).each do |care| %>
+        <% step = care.next_step %>
+        <%= link_to admin_case_path(care, section: step[:section]), class: "attention-item" do %>
+          <span class="table-avatar"><%= care.user.first_name&.first %><%= care.user.last_name&.first %></span>
+          <span class="attention-copy"><strong><%= care.user.name %></strong><small><%= step[:message] %></small></span>
+          <span class="attention-meta"><%= status_badge(care.status) %><%= admin_icon("chevron", size: 16) %></span>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="panel-body"><p class="admin-empty">Nothing is waiting on the team right now.</p></div>
+  <% end %>
+</div>
+<%= section_label "Upcoming" %>
+<div class="journey-next">
+  <% @upcoming.each do |entry| %>
+    <%= link_to admin_case_path(entry[:care], section: entry[:kind] == "Treatment" ? "treatment" : "consultation"), class: "next-card #{"confirmed" if entry[:confirmed]}" do %>
+      <span class="next-icon"><%= admin_icon("appointments", size: 16) %></span>
+      <div><strong><%= entry[:kind] %> · <%= entry[:care].user.name %></strong><small><%= wat(entry[:at]) %></small><small><%= entry[:confirmed] ? "Confirmed by the clinic" : "Awaiting clinic confirmation" %></small></div>
+    <% end %>
+  <% end %>
+  <% if @upcoming.empty? %><p class="admin-empty">Nothing is scheduled in the coming days.</p><% end %>
+</div>
+<%= section_label "Recent activity" %>
+<div class="admin-panel">
+  <div class="panel-body admin-activity-list"><% @events.each do |event| %><div class="activity-item"><span class="activity-icon"><%= admin_icon("activity", size: 16) %></span><div><p><%= link_to event.care_case.reference, admin_case_path(event.care_case) %> · <%= event.message %></p><small><%= time_ago_in_words(event.created_at) %> ago</small></div></div><% end %></div>
+</div>

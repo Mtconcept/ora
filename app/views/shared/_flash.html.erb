@@ -1,0 +1,1 @@
+<% flash.each do |type, message| %><div class="flash flash-<%= type %>" role="<%= type == 'alert' ? 'alert' : 'status' %>"><span><%= message %></span><button type="button" aria-label="Dismiss notification" data-controller="dismiss" data-action="dismiss#close">×</button></div><% end %>

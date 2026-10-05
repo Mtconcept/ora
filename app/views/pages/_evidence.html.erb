@@ -1,0 +1,53 @@
+<%# Every figure below is quoted from the linked source. Check them again before changing the copy. %>
+<% oral = ['World Health Organization (2025). Oral health, fact sheet.', 'https://www.who.int/news-room/fact-sheets/detail/oral-health'] %>
+<% vision = ['World Health Organization (2026). Blindness and vision impairment, fact sheet.', 'https://www.who.int/news-room/fact-sheets/detail/blindness-and-visual-impairment'] %>
+<% uhc = ['World Health Organization (2025). Universal health coverage, fact sheet.', 'https://www.who.int/news-room/fact-sheets/detail/universal-health-coverage-(uhc)'] %>
+<% topics = [
+  ['Teeth', [
+    ['Most common', 'health condition', 'Untreated tooth decay in adult teeth is the most common health condition in the world.', oral],
+    ['3.7 billion', 'people affected', 'Oral diseases affect nearly 3.7 billion people, even though they are largely preventable.', oral],
+    ['1 billion+', 'gum disease cases', 'Severe gum disease accounts for more than 1 billion cases worldwide.', oral],
+    ['Complete', 'tooth loss', 'Almost 7% of people aged 20 or older have lost all their teeth, rising to 23% of those aged 60 or older.', oral]
+  ]],
+  ['Eyes', [
+    ['2.2 billion', 'with poor vision', 'At least 2.2 billion people live with a near or distance vision impairment.', vision],
+    ['1 billion', 'cases left waiting', 'For at least 1 billion of them, it could have been prevented or has yet to be addressed.', vision],
+    ['21.7%', 'more productive', 'Tea pickers given reading glasses were 21.7% more productive, and 31.6% more among those over 50.', ['Reddy, P. A., et al. (2018). The Lancet Global Health (PROSPER trial).', 'https://www.thelancet.com/journals/langlo/article/PIIS2214-109X(18)30329-2/fulltext']],
+    ['US$411 billion', 'lost every year', 'Poor vision costs an estimated US$411 billion in lost productivity worldwide each year.', vision]
+  ]],
+  ['Money', [
+    ['72%', 'paid out of pocket', 'In Nigeria, around 72% of all health spending is paid directly by patients and families.', ['WHO Global Health Expenditure Database, via the World Bank (2023 data).', 'https://data.worldbank.org/indicator/SH.XPD.OOPC.CH.ZS?locations=NG']],
+    ['2.1 billion', 'facing hardship', 'In 2022, 2.1 billion people faced financial hardship because of out-of-pocket health costs.', uhc],
+    ['3 in 4', 'of the poorest', 'Among the poorest people, 3 in 4 faced financial hardship from health costs in 2022.', uhc],
+    ['Rarely', 'covered', 'Dental prevention and treatment is expensive, and usually not part of national health coverage.', oral]
+  ]]
+] %>
+<section class="lp-frame" id="evidence" data-controller="tabs">
+  <div class="lp-frame__inner">
+    <div class="lp-studies__head">
+      <p class="lp-chip">The cost of waiting</p>
+      <h2 class="lp-studies__title">Studies show the care you keep postponing costs more than you think, <strong>from your health to your pocket.</strong></h2>
+      <div class="lp-tabs" role="tablist" aria-label="Evidence by topic">
+        <% topics.each_with_index do |(topic, _), index| %>
+          <button type="button" role="tab" id="evidence-tab-<%= index %>" aria-controls="evidence-panel-<%= index %>" aria-selected="<%= index.zero? %>" tabindex="<%= index.zero? ? 0 : -1 %>" data-tabs-target="tab" data-action="tabs#select keydown->tabs#key"><%= topic %></button>
+        <% end %>
+      </div>
+    </div>
+    <% topics.each_with_index do |(_, cards), index| %>
+      <div class="lp-studies__grid" role="tabpanel" id="evidence-panel-<%= index %>" aria-labelledby="evidence-tab-<%= index %>" data-tabs-target="panel"<%= ' hidden' unless index.zero? %>>
+        <% cards.each do |muted, rest, body, (citation, url)| %>
+          <article class="lp-study">
+            <div class="lp-study__card">
+              <h3><span><%= muted %></span> <%= rest %></h3>
+              <p><%= body %></p>
+              <footer>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
+                <a href="<%= url %>" target="_blank" rel="noopener"><%= citation %></a>
+              </footer>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</section>

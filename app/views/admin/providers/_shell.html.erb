@@ -1,0 +1,34 @@
+<%# Provider onboarding uses the same stepper as a care record: context, the next thing to do, then
+    one stage open at a time. %>
+<% step = provider.new_record? ? { section: "organisation", message: "Start with the organisation behind the clinic.", waiting: false } : provider.next_step %>
+<div class="breadcrumb"><%= link_to "Providers", admin_providers_path %> / <%= provider.new_record? ? "New" : provider.name %></div>
+<div class="journey-head">
+  <div>
+    <h1><%= provider.new_record? ? "Add provider" : provider.name %></h1>
+    <p><%= provider.new_record? ? "Six stages. Ora looks up what it can; you confirm the rest." : [ provider.legal_name, provider.provider_type ].compact_blank.join(" · ").presence || "Draft provider" %></p>
+    <div class="journey-head-meta">
+      <% if provider.registration_number.present? %><span class="admin-id">RC <%= provider.registration_number %></span><% end %>
+      <%= status_badge(provider.new_record? ? "new" : provider.published? ? "published" : "draft") %>
+      <% unless provider.new_record? || provider.draft? %><%= link_to provider_path(provider), class: "text-link", target: "_blank", rel: "noopener" do %>View public page <%= admin_icon("external", size: 12) %><% end %><% end %>
+    </div>
+  </div>
+  <% unless provider.new_record? %>
+    <div class="journey-head-figure"><small><%= pluralize(provider.listings.count, "procedure") %></small><strong><%= pluralize(provider.provider_locations.count, "location") %></strong></div>
+  <% end %>
+</div>
+<%= render "shared/errors", object: provider %>
+<section class="stepper-now <%= "waiting" if step[:waiting] %>">
+  <div>
+    <span class="eyebrow"><%= step[:waiting] ? "Waiting on the provider" : "Next" %></span>
+    <p><%= step[:message] %></p>
+  </div>
+  <% unless provider.new_record? || step[:section] == stage %>
+    <%= link_to stage_admin_provider_path(provider, stage: step[:section]), class: "button secondary small" do %><%= provider_stage_name(step[:section]) %><%= admin_icon("chevron", size: 16) %><% end %>
+  <% end %>
+</section>
+<%= section_label "Onboarding" %>
+<div class="admin-panel stepper-card">
+  <%= render "shared/stepper_rail", steps: provider_stepper_steps(provider), open: stage, label: "Onboarding stages",
+             note: (provider.new_record? ? "The remaining stages open once the organisation is saved." : nil) %>
+  <%= render "stage_#{stage}", provider: provider %>
+</div>

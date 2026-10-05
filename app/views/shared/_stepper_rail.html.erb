@@ -1,0 +1,17 @@
+<%# The stage rail shared by a care journey and provider onboarding. Steps are all links or all
+    plain text within one rail, which is what the connector's :last-of-type rule relies on. %>
+<nav class="stepper-rail" aria-label="<%= label %>">
+  <% steps.each do |step| %>
+    <% classes = "stepper-step #{step[:state]}#{" open" if step[:key] == open}#{" locked" if step[:href].blank?}" %>
+    <% body = capture do %>
+      <span class="stepper-marker"><%= step[:state] == "done" ? admin_icon("check", size: 14) : step[:number] %></span>
+      <span class="stepper-step-copy"><strong><%= step[:name] %></strong><small><%= step[:blurb] %></small></span>
+    <% end %>
+    <% if step[:href].present? %>
+      <%= link_to body, step[:href], class: classes, aria: { current: ("step" if step[:key] == open) } %>
+    <% else %>
+      <span class="<%= classes %>" aria-current="<%= "step" if step[:key] == open %>"><%= body %></span>
+    <% end %>
+  <% end %>
+  <% if local_assigns[:note].present? %><p class="stepper-rail-note"><%= note %></p><% end %>
+</nav>

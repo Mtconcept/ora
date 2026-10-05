@@ -1,0 +1,61 @@
+<% content_for :title, @procedure.name %>
+<% begin_path = @listings.one? ? start_journey_path(listing_id: @listings.first.id) : '#clinics' %>
+<section class="lp-frame">
+  <div class="lp-frame__inner">
+    <nav class="lp-crumbs" aria-label="Breadcrumb"><%= link_to 'Treatments', procedures_path %><span class="lp-crumbs__sep" aria-hidden="true"></span><%= link_to @procedure.category, procedures_path(category: @procedure.category) %><span class="lp-crumbs__sep" aria-hidden="true"></span><span aria-current="page"><%= @procedure.name %></span></nav>
+    <div class="lp-profile__body">
+      <div class="lp-profile__main">
+        <header class="lp-head lp-head--left lp-head--tight">
+          <p class="lp-chip"><%= @procedure.category %></p>
+          <h1 class="lp-title"><%= @procedure.name %></h1>
+          <p class="lp-sub"><%= @procedure.summary %></p>
+        </header>
+        <div class="lp-card lp-card--<%= @procedure.category.downcase %> lp-detail-art">
+          <div class="lp-card__visual">
+            <span class="lp-card__labels"><span><%= @procedure.category.upcase %></span><span>FROM <%= money(@procedure.starting_price) %></span></span>
+            <%= icon(category_icon(@procedure.category), size: 140) %>
+          </div>
+        </div>
+        <div class="lp-prose">
+          <h2 class="lp-title lp-title--sm">What to <strong>expect</strong></h2>
+          <p><%= @procedure.description %></p>
+        </div>
+        <div class="lp-facts">
+          <div><p class="lp-mono">First</p><h3>A clinician’s eye</h3><p>They look at your goals, check it’s right for you, and give you a personal price.</p></div>
+          <div><p class="lp-mono">After</p><h3>Recovery, your way</h3><p><%= @procedure.recovery %></p></div>
+        </div>
+        <div class="lp-note"><%= icon('shield', size: 18) %><p>Only your clinician can say if a treatment is right for you. Looking at prices or payment plans is never a medical approval.</p></div>
+      </div>
+      <aside class="lp-aside">
+        <div class="lp-aside__card">
+          <p class="lp-mono">What it could cost</p>
+          <h3>Care in plain numbers.</h3>
+          <div class="lp-aside__figure"><p>Price from</p><p class="lp-aside__price"><%= money(@procedure.starting_price) %></p></div>
+          <div class="lp-aside__figure"><p>Or small, small each month</p><p class="lp-aside__monthly"><%= money(monthly(@procedure.starting_price)) %><small> a month</small></p></div>
+          <p class="lp-fine">Over 12 months with a 12% total charge. A guide, not a lender offer. Your final price follows your clinician’s assessment.</p>
+          <% if @listings.any? %>
+            <%= link_to begin_path, class: 'lp-btn lp-btn--dark lp-btn--full' do %>Start my care journey <%= icon('arrow', size: 16) %><% end %>
+            <% unless @listings.one? %><p class="lp-aside__hint">Choose the clinic that feels right below, and begin there.</p><% end %>
+          <% end %>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+<div class="lp-rule"></div>
+
+<section class="lp-frame" id="clinics">
+  <div class="lp-frame__inner">
+    <header class="lp-head lp-head--left lp-head--split">
+      <div>
+        <p class="lp-chip">Clinics offering this</p>
+        <h2 class="lp-title lp-title--sm">Pick the clinic <strong>that feels right</strong></h2>
+      </div>
+      <p class="lp-mono"><%= pluralize(@listings.size, 'clinic') %></p>
+    </header>
+    <ol class="lp-offers lp-offers--framed">
+      <% @listings.each do |listing| %><%= render 'shared/provider_listing', listing: listing %><% end %>
+    </ol>
+    <% if @listings.empty? %><div class="lp-empty"><p class="lp-sub">No clinic offers this yet. <%= link_to 'Talk to the Ora team', support_path %> and we’ll help you find a way.</p></div><% end %>
+  </div>
+</section>

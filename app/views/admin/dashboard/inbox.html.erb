@@ -1,0 +1,25 @@
+<% content_for :title, "Concierge inbox" %><% content_for :page_label, "Concierge inbox" %>
+<div class="admin-page-heading"><div><h1>Concierge inbox</h1><p>Questions and connections from the Ora community.</p></div></div>
+<div class="admin-panel">
+  <div class="panel-heading"><div><h2>Support requests</h2><p><%= pluralize(@requests.where(status: "open").count, "open request") %></p></div></div>
+  <div class="panel-body">
+    <% @requests.each do |request| %>
+      <article class="admin-inbox-item">
+        <header><strong><%= request.email %></strong><span class="admin-status status-<%= request.status %>"><i></i><%= request.status.humanize %></span></header>
+        <p><%= request.message %></p>
+        <footer>
+          <small><%= request.created_at.strftime("%d %b %Y, %H:%M") %></small>
+          <% if request.status == "open" %><%= button_to admin_resolve_path(request), method: :patch, class: "button secondary small" do %><%= admin_icon("check", size: 16) %> Mark as resolved<% end %><% end %>
+        </footer>
+      </article>
+    <% end %>
+    <% if @requests.empty? %><p class="admin-empty">No messages yet. A little breathing room.</p><% end %>
+  </div>
+</div>
+<div class="admin-panel">
+  <div class="panel-heading"><div><h2>Mobile early access</h2><p><%= pluralize(@waitlist.count, "person") %> on the waitlist.</p></div></div>
+  <div class="panel-body admin-audit-list">
+    <% @waitlist.each do |entry| %><div><span><%= entry.email %></span><strong><%= entry.created_at.strftime("%d %b %Y") %></strong></div><% end %>
+    <% if @waitlist.empty? %><p class="admin-empty">The mobile waitlist is ready for its first sign-up.</p><% end %>
+  </div>
+</div>

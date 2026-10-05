@@ -1,0 +1,11 @@
+<%# Identifier first, documents second: Ora tries the register, and only falls back to what
+    operations confirmed by hand when no integration answers. %>
+<div class="lookup">
+  <%= form_with url: lookup_admin_provider_path(provider), class: "lookup-form" do |f| %>
+    <%= hidden_field_tag :stage, stage %><%= hidden_field_tag :kind, kind %>
+    <div><%= label_tag :query, prompt %><%= text_field_tag :query, local_assigns[:query], placeholder: placeholder, aria: { label: prompt } %></div>
+    <%= submit_tag action, name: nil, class: "button secondary small" %>
+  <% end %>
+  <% status = local_assigns[:result] || lookup_for(kind) %>
+  <p class="lookup-note"><strong><%= status.source %> is not connected.</strong> <%= status.note %></p>
+</div>

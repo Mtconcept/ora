@@ -1,0 +1,26 @@
+<% home = controller_name == 'pages' && action_name == 'home' %>
+<header class="lp-nav<%= ' is-scrolled' unless home %>" data-controller="landing-nav">
+  <div class="lp-nav__bar">
+    <%= link_to root_path, class: 'lp-logo', 'aria-label': 'Ora home' do %><%= ora_mark %><span>ora</span><% end %>
+    <nav class="lp-nav__links" aria-label="Main navigation">
+      <%= link_to 'Why Ora', home ? '#compare' : root_path(anchor: 'compare') %>
+      <%= link_to 'Treatments', procedures_path, 'aria-current': ('page' if controller_name == 'procedures') %>
+      <%= link_to 'Clinics', providers_path, 'aria-current': ('page' if controller_name == 'providers') %>
+      <%= link_to 'How it works', home ? '#journey' : how_path, 'aria-current': ('page' if action_name == 'how') %>
+      <%= link_to 'FAQ', home ? '#faq' : root_path(anchor: 'faq') %>
+    </nav>
+    <div class="lp-nav__actions">
+      <% if signed_in? %><%= link_to 'My Care', my_care_path, class: 'lp-nav__login' %><% else %><%= link_to 'Sign in', sign_in_path, class: 'lp-nav__login' %><% end %>
+      <%= link_to 'Find my treatment', procedures_path, class: 'lp-nav__join' %>
+      <button class="lp-nav__menu" type="button" data-action="navigation#toggle" aria-label="Open navigation" aria-expanded="false" data-navigation-target="button"><span></span><span></span></button>
+    </div>
+  </div>
+  <nav class="lp-nav__sheet" data-navigation-target="menu" hidden aria-label="Mobile navigation">
+    <%= link_to 'Find my treatment', procedures_path %>
+    <%= link_to 'Clinics', providers_path %>
+    <%= link_to 'What can I afford?', affordability_path %>
+    <%= link_to 'How it works', how_path %>
+    <%= link_to 'My Care', my_care_path %>
+    <% if signed_in? %><%= button_to 'Sign out', sign_out_path, method: :delete %><% else %><%= link_to 'Sign in', sign_in_path %><% end %>
+  </nav>
+</header>

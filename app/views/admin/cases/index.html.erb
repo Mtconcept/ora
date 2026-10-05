@@ -1,0 +1,15 @@
+<% content_for :title, "Care journeys" %><% content_for :page_label, "Care journeys" %>
+<div class="admin-page-heading">
+  <div><h1>Care journeys</h1><p>Every person. Every stage. One considered view.</p></div>
+  <span class="admin-count"><%= pluralize(@cases.count, "journey") %></span>
+</div>
+<div class="admin-panel">
+  <%= form_with url: admin_cases_path, method: :get, class: "admin-toolbar" do |form| %>
+    <div class="admin-toolbar-filters">
+      <%= form.select :status, options_for_select([ [ "All stages", "" ] ] + CareCase::STATUSES.map { |status| [ label_for(status), status ] }, params[:status]), {}, aria: { label: "Stage" } %>
+      <%= form.submit "Apply", name: nil, class: "button secondary small" %>
+    </div>
+    <div class="admin-search"><%= admin_icon("search", size: 16) %><%= form.search_field :q, value: params[:q], placeholder: "Search patient or reference", aria: { label: "Search care journeys" } %></div>
+  <% end %>
+  <%= render "table", cases: @cases %>
+</div>

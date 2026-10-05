@@ -1,0 +1,30 @@
+<% content_for :title, "Appointments" %><% content_for :page_label, "Appointments" %>
+<div class="admin-page-heading">
+  <div><h1>Appointments</h1><p>Every consultation and treatment date across the care desk.</p></div>
+  <span class="admin-count"><%= pluralize(@unconfirmed_count, "date") %> awaiting clinic confirmation</span>
+</div>
+<div class="admin-panel">
+  <div class="admin-toolbar">
+    <div class="admin-filter-tabs">
+      <%= link_to "Upcoming (#{@upcoming_count})", admin_appointments_path, class: ("active" if @scope == "upcoming") %>
+      <%= link_to "Past (#{@past_count})", admin_appointments_path(scope: "past"), class: ("active" if @scope == "past") %>
+    </div>
+  </div>
+  <div class="table-scroll"><table class="data-table">
+    <thead><tr><th>When</th><th>Patient</th><th>Appointment</th><th>Care &amp; provider</th><th>Clinic</th><th><span class="sr-only">Actions</span></th></tr></thead>
+    <tbody>
+      <% @appointments.each do |entry| %>
+        <% care = entry[:care] %>
+        <tr>
+          <td class="appointment-when"><strong><%= entry[:at].strftime("%d %b %Y") %></strong><small><%= entry[:at].strftime("%H:%M WAT") %></small></td>
+          <td><div class="patient-cell"><span class="table-avatar"><%= care.user.first_name&.first %><%= care.user.last_name&.first %></span><div><strong><%= care.user.name %></strong><small><%= care.reference %></small></div></div></td>
+          <td><%= entry[:kind] %></td>
+          <td><strong><%= care.procedure.name %></strong><small><%= care.provider.name %>, <%= care.provider.location %></small></td>
+          <td><span class="admin-status status-<%= entry[:confirmed] ? "active" : "pending" %>"><i></i><%= entry[:confirmed] ? "Confirmed" : "Awaiting confirmation" %></span></td>
+          <td class="row-actions"><%= link_to admin_case_path(care, section: entry[:kind] == "Treatment" ? "treatment" : "consultation"), class: "row-chevron", aria: { label: "Open #{care.reference}" } do %><%= admin_icon("chevron", size: 16) %><% end %></td>
+        </tr>
+      <% end %>
+      <% if @appointments.empty? %><tr><td colspan="6" class="admin-empty"><%= @scope == "past" ? "No past appointments." : "Nothing is scheduled. Dates appear here once patients request them." %></td></tr><% end %>
+    </tbody>
+  </table></div>
+</div>

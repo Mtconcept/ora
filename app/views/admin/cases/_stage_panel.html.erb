@@ -1,0 +1,80 @@
+<%# One phase of the care journey. Only the fields that phase is responsible for are open; the stage
+    selector sits in the footer so the team can record work and move the journey on in one save. %>
+<%= form_with model: @case, url: admin_case_path(@case), id: "stage-panel-form", class: "stepper-panel" do |f| %>
+  <%= hidden_field_tag :section, section %>
+  <header class="stepper-panel-head">
+    <h2><%= phase_name(section) %></h2>
+    <p>
+      <% case section
+         when "intake" %>What the patient told us at sign-up. Check it reads correctly, then give the journey an owner.
+      <% when "consultation" %>The consultation the patient asked for, and the clinic’s confirmation of it.
+      <% when "assessment" %>The provider’s assessment, final price and preparation instructions.
+      <% when "financing" %>Record a partner’s decision. Pre-approval does not equal medical approval or funding. A funded offer cannot be amended here.
+      <% when "treatment" %>The treatment date, the clinic’s confirmation and the outcome.
+      <% end %>
+    </p>
+  </header>
+  <div class="stepper-panel-body">
+    <% case section
+       when "intake" %>
+      <div class="form-columns">
+        <div class="span-2"><%= f.label :assigned_to, "Assigned team member" %><%= f.text_field :assigned_to, placeholder: "Who owns the next step" %></div>
+      </div>
+      <dl class="admin-detail-list">
+        <dt>Area</dt><dd><%= @case.area.presence || "—" %></dd>
+        <dt>Employment</dt><dd><%= @case.employment.presence || "—" %></dd>
+        <dt>Income range midpoint</dt><dd><%= money(@case.monthly_income) %></dd>
+        <dt>Monthly comfort budget</dt><dd><%= money(@case.monthly_budget) %></dd>
+        <dt>Paying with financing</dt><dd><%= @case.financing_requested ? "Yes" : "No, self-pay" %></dd>
+        <dt>Consent recorded</dt><dd><%= wat(@case.consented_at, "Not recorded") %></dd>
+      </dl>
+    <% when "consultation" %>
+      <dl class="admin-detail-list">
+        <dt>Requested date</dt><dd><%= wat(@case.consultation_at) %></dd>
+        <dt>Preferred format</dt><dd><%= @case.consultation_mode.presence&.humanize || "—" %></dd>
+      </dl>
+      <label class="checkbox-option"><%= f.check_box :consultation_confirmed %><span>Clinic has confirmed this consultation date and time</span></label>
+      <p class="admin-field-note">The patient sees this confirmation in My Care. A date must be recorded before it can be confirmed.</p>
+    <% when "assessment" %>
+      <div class="form-columns">
+        <div><%= f.label :medical_status, "Provider assessment" %><%= f.select :medical_status, [ [ "Pending", "pending" ], [ "Approved by provider", "approved" ], [ "Not approved by provider", "not_approved" ] ] %></div>
+        <div><%= f.label :final_price, "Final treatment price (₦)" %><%= f.number_field :final_price, min: 1, step: 1 %></div>
+        <div class="span-2"><%= f.label :preparation, "Preparation instructions supplied by provider" %><%= f.text_area :preparation, rows: 4, placeholder: "Record only instructions received from the treating provider." %></div>
+      </div>
+      <p class="admin-field-note">Changing the final price resets the patient’s acceptance of the plan.</p>
+    <% when "financing" %>
+      <% unless @case.financing_requested %><p class="stepper-note">This patient is paying without financing. Only record partner terms here if that changes.</p><% end %>
+      <div class="stepper-figures">
+        <div><small>Treatment price</small><strong><%= money(@case.cost) %></strong></div>
+        <div><small>Partner approved</small><strong><%= money(@case.approved_amount) %></strong></div>
+        <div><small>Patient upfront</small><strong><%= money(@case.upfront_amount) %></strong></div>
+        <div class="<%= "gap" if @case.funding_gap.positive? %>"><small>Still uncovered</small><strong><%= money(@case.funding_gap) %></strong></div>
+      </div>
+      <div class="form-columns">
+        <div><%= f.label :financing_status %><%= f.select :financing_status, CareCase::FINANCE_STATUSES.map { |status| [ label_for(status), status ] } %></div>
+        <div><%= f.label :approved_amount, "Partner-approved amount (₦)" %><%= f.number_field :approved_amount, min: 1, step: 1 %></div>
+        <div><%= f.label :lender_name, "Lender / financing partner" %><%= f.text_field :lender_name %></div>
+        <div><%= f.label :term_months %><%= f.select :term_months, [ 6, 12, 18, 24 ].map { |months| [ "#{months} months", months ] } %></div>
+        <div><%= f.label :monthly_payment, "Actual monthly payment (₦)" %><%= f.number_field :monthly_payment, min: 1, step: 1 %></div>
+        <div><%= f.label :upfront_amount, "Patient upfront contribution (₦)" %><%= f.number_field :upfront_amount, min: 0, step: 1 %></div>
+        <label class="checkbox-option span-2"><%= f.check_box :upfront_confirmed %><span>Provider has confirmed receipt of the upfront contribution</span></label>
+        <div class="span-2"><%= f.label :financing_terms, "Complete terms supplied by lender" %><%= f.text_area :financing_terms, rows: 5, placeholder: "Include rates/APR, all fees, total repayable, payment schedule, late-payment terms, cancellation and lender contact details." %></div>
+      </div>
+      <p class="admin-field-note">Patient acceptance: <%= wat(@case.terms_accepted_at, "not yet recorded") %>. Changes to price or financing terms reset acceptance.</p>
+    <% when "treatment" %>
+      <dl class="admin-detail-list">
+        <dt>Requested date</dt><dd><%= wat(@case.treatment_at) %></dd>
+        <dt>Preparation sent</dt><dd><%= @case.preparation.present? ? "Yes" : "Not yet recorded" %></dd>
+      </dl>
+      <label class="checkbox-option"><%= f.check_box :treatment_confirmed %><span>Clinic has confirmed this treatment date and time</span></label>
+      <p class="admin-field-note">A journey can only be completed once the clinic has confirmed the booking and the date has passed.</p>
+      <% if @case.rating.present? || @case.review.present? %>
+        <div class="stepper-note"><strong><%= pluralize(@case.rating, "star") %> from the patient.</strong> <%= @case.review %></div>
+      <% end %>
+    <% end %>
+  </div>
+  <footer class="stepper-panel-foot">
+    <div><%= f.label :status, "Journey stage" %><%= f.select :status, CareCase::STATUSES.map { |status| [ label_for(status), status ] } %></div>
+    <%= f.submit "Save #{phase_name(section).downcase}", class: "button primary small" %>
+  </footer>
+<% end %>

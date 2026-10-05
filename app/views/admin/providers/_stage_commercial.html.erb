@@ -1,0 +1,34 @@
+<div class="stepper-panel">
+  <header class="stepper-panel-head">
+    <h2>Commercial</h2>
+    <p>Where Ora settles money, what Ora charges, and the agreement behind it. Ora records these terms; it does not move money.</p>
+  </header>
+  <%= render "lookup", provider: provider, stage: "commercial", kind: "bank", result: @lookup, query: @lookup_query || provider.bank_account_number,
+             prompt: "Settlement account number", placeholder: "0123456789", action: "Verify account" %>
+  <%= form_with model: provider, scope: :provider, url: stage_admin_provider_path(provider, stage: "commercial"), method: :patch do |f| %>
+    <div class="stepper-panel-body">
+      <h3 class="panel-subhead">Settlement</h3>
+      <div class="form-columns">
+        <div><%= f.label :bank_account_number, "Account number" %><%= f.text_field :bank_account_number, placeholder: "0123456789" %></div>
+        <div><%= f.label :bank_name, "Bank" %><%= f.text_field :bank_name, placeholder: "GTBank" %></div>
+        <div class="span-2"><%= f.label :bank_account_name, "Account name" %><%= f.text_field :bank_account_name, placeholder: "ABC Healthcare Limited" %></div>
+        <p class="admin-field-note span-2">The account name should come back from account verification. Until that is connected, confirm it against a bank statement or letter and record the bank check in <%= link_to "Verification", stage_admin_provider_path(provider, stage: "verification"), class: "text-link" %>.</p>
+      </div>
+      <h3 class="panel-subhead">Commercial arrangement</h3>
+      <div class="form-columns">
+        <div><%= f.label :ora_fee_percent, "Ora fee (%)" %><%= f.number_field :ora_fee_percent, min: 0, max: 100, step: "0.01", placeholder: "7" %></div>
+        <div><%= f.label :settlement_terms, "Settlement arrangement" %><%= f.select :settlement_terms, [ "Weekly settlement", "Fortnightly settlement", "Monthly settlement", "Settled per treatment" ], include_blank: "Not agreed" %></div>
+      </div>
+      <h3 class="panel-subhead">Agreement</h3>
+      <div class="form-columns">
+        <div><%= f.label :agreement_executed_at, "Agreement executed on" %><%= f.date_field :agreement_executed_at, value: provider.agreement_executed_at&.to_date %></div>
+        <div><%= f.label :agreement_effective_on, "Effective from" %><%= f.date_field :agreement_effective_on %></div>
+        <div class="span-2"><%= f.label :special_terms, "Special terms" %><%= f.text_area :special_terms, rows: 3, placeholder: "Anything agreed that differs from the standard arrangement." %></div>
+      </div>
+    </div>
+    <footer class="stepper-panel-foot">
+      <p class="admin-field-note">Recording an executed agreement means a signed copy is held on file.</p>
+      <%= f.submit "Save commercial", class: "button primary small" %>
+    </footer>
+  <% end %>
+</div>

@@ -1,0 +1,34 @@
+<% content_for :title, "Settings" %><% content_for :page_label, "Settings" %>
+<div class="admin-page-heading"><div><h1>Settings</h1><p>Manage the people, communication, and controls behind Ora operations.</p></div></div>
+
+<div class="settings-shell">
+  <aside class="settings-nav" aria-label="Settings sections">
+    <span class="settings-nav-label">Workspace</span>
+    <a href="#workspace" class="active"><%= admin_icon("settings", size: 17) %><span>Overview</span></a>
+    <%= link_to admin_settings_team_path do %><%= admin_icon("users", size: 17) %><span>Team &amp; permissions</span><% end %>
+    <%= link_to admin_inbox_path do %><%= admin_icon("inbox", size: 17) %><span>Concierge inbox</span><% end %>
+    <span class="settings-nav-label">Governance</span>
+    <%= link_to admin_users_path do %><%= admin_icon("activity", size: 17) %><span>Users &amp; activity</span><% end %>
+    <span class="settings-nav-item disabled"><%= admin_icon("settings", size: 17) %><span>Notifications</span><small>Soon</small></span>
+  </aside>
+
+  <div class="settings-content" id="workspace">
+    <section class="settings-hero">
+      <div><span class="settings-kicker">Ora workspace</span><h2>Operations control centre</h2><p>One place to manage access, follow incoming conversations, and review account activity.</p></div>
+      <span class="settings-live"><i></i> Active</span>
+      <dl><div><dt>Team members</dt><dd><%= @team_count %></dd></div><div><dt>Open messages</dt><dd><%= @inquiry_count %></dd></div><div><dt>Audit events</dt><dd><%= @audit_count %></dd></div></dl>
+    </section>
+
+    <section class="admin-panel settings-group">
+      <div class="panel-heading"><div><h2>People &amp; access</h2><p>Control who can enter the workspace and what they can manage.</p></div></div>
+      <%= link_to admin_settings_team_path, class: "settings-row" do %><span class="settings-icon"><%= admin_icon("users", size: 19) %></span><span><strong>Team management</strong><small>Add administrators, assign roles, and manage access.</small></span><span class="settings-row-meta"><%= pluralize(@team_count, "member") %></span><%= admin_icon("chevron", size: 16) %><% end %>
+      <%= link_to admin_users_path, class: "settings-row" do %><span class="settings-icon"><%= admin_icon("activity", size: 19) %></span><span><strong>User accounts &amp; activity</strong><small>Review patient status and administrative changes.</small></span><span class="settings-row-meta"><%= pluralize(@audit_count, "event") %></span><%= admin_icon("chevron", size: 16) %><% end %>
+    </section>
+
+    <section class="admin-panel settings-group">
+      <div class="panel-heading"><div><h2>Communication</h2><p>Keep track of conversations arriving from Ora.</p></div></div>
+      <%= link_to admin_inbox_path, class: "settings-row" do %><span class="settings-icon"><%= admin_icon("inbox", size: 19) %></span><span><strong>Concierge inbox</strong><small>Website inquiries and mobile waitlist registrations.</small></span><span class="settings-row-meta"><%= pluralize(@inquiry_count, "open message") %> · <%= pluralize(@waitlist_count, "waitlist entry") %></span><%= admin_icon("chevron", size: 16) %><% end %>
+      <div class="settings-row disabled"><span class="settings-icon"><%= admin_icon("settings", size: 19) %></span><span><strong>Notification preferences</strong><small>Choose how the operations team receives updates.</small></span><span class="settings-row-meta">Coming soon</span></div>
+    </section>
+  </div>
+</div>

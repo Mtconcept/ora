@@ -1,0 +1,14 @@
+<% content_for :title, @user.name %><% content_for :page_label, "Users / #{@user.name}" %>
+<div class="breadcrumb"><%= link_to "Users", admin_users_path %> / <%= @user.name %></div>
+<div class="admin-page-heading">
+  <div class="admin-user-heading"><span class="profile-avatar"><%= @user.name.first.upcase %></span><div><h1><%= @user.name %></h1><p>User #<%= @user.id %> · Joined <%= @user.created_at.strftime("%d %B %Y") %></p></div></div>
+  <div class="button-row"><%= link_to "Edit user", edit_admin_user_path(@user), class: "button secondary small" %><% if @user.status == "suspended" %><%= button_to "Reactivate", reactivate_admin_user_path(@user), method: :post, class: "button primary small" %><% elsif @user != current_admin %><%= button_to "Suspend", suspend_admin_user_path(@user), method: :post, class: "button warning small", form: { data: { turbo_confirm: "Suspend this user’s access?" } } %><% end %></div>
+</div>
+<div class="admin-detail-grid">
+  <div>
+    <div class="admin-panel"><div class="panel-heading"><div><h2>Personal information</h2><p>Contact and identity details.</p></div></div><div class="panel-body"><dl class="admin-detail-list"><dt>Full name</dt><dd><%= @user.name %></dd><dt>Email</dt><dd><%= @user.email.presence || "—" %></dd><dt>Phone</dt><dd><%= @user.phone %></dd></dl></div></div>
+    <div class="admin-panel"><div class="panel-heading"><div><h2>Account</h2><p>Permissions and access status.</p></div></div><div class="panel-body"><dl class="admin-detail-list"><dt>Role</dt><dd><span class="admin-role role-<%= @user.role %>"><%= @user.role.humanize %></span></dd><dt>Status</dt><dd><span class="admin-status status-<%= @user.status %>"><i></i><%= @user.status.humanize %></span></dd><dt>Care journeys</dt><dd><%= @user.care_cases.count %></dd><dt>Last login</dt><dd><%= @user.last_login_at&.strftime("%d %b %Y, %H:%M") || "Never" %></dd><dt>Login count</dt><dd><%= @user.login_count %></dd></dl></div></div>
+    <% if current_admin.super_admin? && @user != current_admin %><div class="admin-danger-zone"><div><strong>Deactivate user</strong><p>Removes access while preserving the record and audit history.</p></div><%= button_to "Deactivate", deactivate_admin_user_path(@user), method: :delete, class: "button danger small", form: { data: { turbo_confirm: "Deactivate #{@user.name}? This will remove their access." } } %></div><% end %>
+  </div>
+  <aside><div class="admin-panel"><div class="panel-heading"><div><h2>Activity log</h2><p>Administrative changes to this account.</p></div></div><div class="panel-body admin-audit-list"><% @audit_events.each do |event| %><div><span><%= event.action.humanize %></span><strong><%= event.actor&.name || "System" %></strong><small><%= event.created_at.strftime("%d %b %Y, %H:%M") %></small></div><% end %><% if @audit_events.empty? %><p class="admin-empty">No administrative changes recorded.</p><% end %></div></div></aside>
+</div>

@@ -1,0 +1,14 @@
+<div class="table-scroll"><table class="data-table">
+  <thead><tr><th>Patient</th><th>Care & provider</th><th>Stage</th><th>Financing</th><th>Estimate</th><th><span class="sr-only">Actions</span></th></tr></thead>
+  <tbody>
+    <% cases.each do |care| %><tr class="clickable-row" tabindex="0" data-controller="row-link" data-row-link-url-value="<%= admin_case_path(care) %>" data-action="click->row-link#navigate keydown->row-link#navigateWithKeyboard">
+      <td><div class="patient-cell"><span class="table-avatar"><%= care.user.first_name&.first %><%= care.user.last_name&.first %></span><div><strong><%= care.user.name %></strong><small><%= care.reference %></small></div></div></td>
+      <td><strong><%= care.procedure.name %></strong><small><%= care.provider.name %></small></td>
+      <td><%= status_badge(care.status) %></td>
+      <td><span class="admin-status status-<%= care.financing_status %>"><i></i><%= label_for(care.financing_status) %></span></td>
+      <td><%= money(care.cost) %></td>
+      <td class="row-actions"><%= link_to admin_case_path(care), class: "row-chevron", aria: { label: "Open #{care.reference}" } do %><%= admin_icon("chevron", size: 16) %><% end %></td>
+    </tr><% end %>
+    <% if cases.empty? %><tr><td colspan="6" class="admin-empty">No care journeys match this view.</td></tr><% end %>
+  </tbody>
+</table></div>
