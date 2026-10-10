@@ -1,6 +1,6 @@
 # Ora
 
-A Rails 8.1 application for a considered planned-care experience, with Turbo, Stimulus, SQLite, a responsive customer website, and a separate operations workspace.
+A Rails 8.1 application for a considered planned-care experience, with Turbo, Stimulus, SQLite locally, PostgreSQL in production, a responsive customer website, and a separate operations workspace.
 
 ## Open Ora
 
@@ -27,6 +27,12 @@ ORA_ADMIN_PASSWORD='choose-a-private-password' bin/rails db:seed
 ```
 
 The seed refuses to run in production and creates no patient records. Set `ORA_ADMIN_PASSWORD` to create or update the local admin password. Environment files are examples only; export variables in your shell. The password is never committed or shown on the sign-in page.
+
+## Railway deployment
+
+The Railway project builds from `Mtconcept/ora` on `main` and uses a PostgreSQL service. Set `RAILS_ENV=production`, `DATABASE_URL=${{Postgres.DATABASE_URL}}`, and `RAILS_MASTER_KEY` (the private contents of `config/master.key`) on the app service. Configure `bin/rails db:prepare` as its pre-deploy command and `/up` as its healthcheck path, then deploy the staged changes. Keep the master key out of Git and logs.
+
+The production database starts empty. The fictional local seeds intentionally refuse to run there; add real providers and procedures only after their details and verification have been approved. Production patient phone sign-in remains disabled until SMS verification is integrated, and a production admin account is not automatically created. A reachable website is therefore a deployment preview, not approval to accept real patients or financing applications.
 
 ## Working journeys
 
