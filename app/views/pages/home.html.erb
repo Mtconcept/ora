@@ -47,18 +47,65 @@
   </div>
 </section>
 
-<div class="lp-marquee" aria-label="Care you can explore on Ora">
-  <p class="lp-marquee__label">On Ora</p>
-  <div class="lp-marquee__track">
-    <% 2.times do |copy| %>
-      <ul class="lp-marquee__list"<%= ' aria-hidden="true"'.html_safe if copy == 1 %>>
-        <% @procedures.each do |procedure| %><li><%= link_to procedure.name, procedure_path(procedure), tabindex: (copy == 1 ? -1 : nil) %></li><% end %>
-      </ul>
-    <% end %>
+<% if @procedures.any? %>
+  <div class="lp-marquee" aria-label="Care you can explore on Ora">
+    <p class="lp-marquee__label">On Ora</p>
+    <div class="lp-marquee__track">
+      <% 2.times do |copy| %>
+        <ul class="lp-marquee__list"<%= ' aria-hidden="true"'.html_safe if copy == 1 %>>
+          <% @procedures.each do |procedure| %><li><%= link_to procedure.name, procedure_path(procedure), tabindex: (copy == 1 ? -1 : nil) %></li><% end %>
+        </ul>
+      <% end %>
+    </div>
   </div>
-</div>
+<% end %>
+
+<section class="lp-frame lp-concepts" aria-labelledby="lp-concepts-title">
+  <div class="lp-frame__inner">
+    <header class="lp-concepts__head">
+      <p class="lp-chip">A considered change</p>
+      <h2 id="lp-concepts-title">See the possibility. <strong>Stay yourself.</strong></h2>
+      <p>Illustrative concepts of subtle cosmetic changes. A qualified clinician helps you decide what is right for you.</p>
+    </header>
+    <div class="lp-concepts__grid">
+      <% [['ora-concept-front.jpg', 'Front view', 'A subtle refinement, seen from the front'], ['ora-concept-profile.jpg', 'Profile view', 'A subtle refinement, seen in profile']].each do |image, angle, description| %>
+        <figure class="lp-concept">
+          <div class="lp-concept__visual">
+            <%= image_tag image, alt: "AI-generated concept showing the same fictional African woman before and after an imagined subtle nose refinement. #{description}.", loading: 'lazy' %>
+            <span class="lp-concept__before">Before · concept</span>
+            <span class="lp-concept__after">After · concept</span>
+          </div>
+          <figcaption><span>Nose refinement · <%= angle %></span><span>AI illustration</span></figcaption>
+        </figure>
+      <% end %>
+    </div>
+    <p class="lp-concepts__note">These are fictional, AI-generated illustrations, not Ora patients or predicted surgical results. Actual suitability and outcomes vary and are decided with a clinician.</p>
+  </div>
+</section>
+<div class="lp-rule"></div>
 
 <%= render 'evidence' %>
+<div class="lp-rule"></div>
+
+<section class="lp-frame lp-considered" aria-labelledby="lp-considered-title">
+  <div class="lp-frame__inner">
+    <div class="lp-considered__head">
+      <p class="lp-chip">Care, with intention</p>
+      <h2 id="lp-considered-title">The right decision starts with <strong>the right conversation.</strong></h2>
+    </div>
+    <div class="lp-considered__body">
+      <%= image_tag 'ora-cosmetic-poster.jpg', alt: 'A clinician speaks with a woman during a cosmetic care consultation', loading: 'lazy' %>
+      <div class="lp-considered__copy">
+        <h3>Care that begins with you.</h3>
+        <p>Explore your options at your own pace. A clinician reviews what is suitable, what recovery may involve, and what the final plan should be before you decide.</p>
+        <div class="lp-considered__cards">
+          <article><span>01 / Understand</span><h4>Know your options</h4><p>See the questions worth asking and the details that matter to you.</p></article>
+          <article><span>02 / Decide</span><h4>Your choice, clearly</h4><p>Make space for a clinical conversation before any commitment.</p></article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 <div class="lp-rule"></div>
 
 <% if @example %>
@@ -263,4 +310,3 @@
     <%= link_to procedures_path, class: 'lp-glass-btn' do %><span>Find my treatment</span><i><%= icon('arrow', size: 18) %></i><% end %>
   </div>
 </section>
-

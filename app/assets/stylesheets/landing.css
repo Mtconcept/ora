@@ -170,6 +170,39 @@ html:has(body.landing) { scroll-padding-top: 88px; }
 .lp-head--glass .lp-title strong { color: rgba(255, 255, 255, .5); }
 .lp-head--glass .lp-sub { color: rgba(255, 255, 255, .9); }
 
+/* Fictional cosmetic concepts */
+.lp-concepts { background: #f7f5f2; }
+.lp-concepts__head { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 88px 24px 40px; text-align: center; }
+.lp-concepts__head h2 { font-size: clamp(36px, 4vw, 56px); line-height: 1.08; letter-spacing: -.04em; }
+.lp-concepts__head h2 strong { font-weight: 400; color: #8f6d67; }
+.lp-concepts__head > p:last-child { max-width: 580px; color: var(--q-text); }
+.lp-concepts__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 0 24px; }
+.lp-concept { min-width: 0; margin: 0; }
+.lp-concept__visual { position: relative; overflow: hidden; aspect-ratio: 1.9; border-radius: 12px; background: #ded8d1; outline: 1px solid oklch(0 0 0 / .1); }
+.lp-concept__visual img { width: 100%; height: 100%; object-fit: cover; }
+.lp-concept__before, .lp-concept__after { position: absolute; bottom: 16px; padding: 6px 10px; border-radius: 99px; background: rgba(255, 255, 255, .9); color: var(--q-ink); font-family: var(--q-mono); font-size: 10px; line-height: 14px; text-transform: uppercase; }
+.lp-concept__before { left: 16px; }
+.lp-concept__after { left: calc(50% + 16px); }
+.lp-concept figcaption { display: flex; justify-content: space-between; gap: 12px; padding: 14px 2px; color: var(--q-ink); font-size: 14px; }
+.lp-concept figcaption span:last-child { color: var(--q-muted); }
+.lp-concepts__note { max-width: 760px; margin: 0 auto; padding: 20px 24px 72px; color: var(--q-muted); font-size: 12px; line-height: 18px; text-align: center; }
+
+/* An image-led pause between the evidence and the care comparison */
+.lp-considered { background: #f7f5f2; }
+.lp-considered__head { padding: 80px 40px 48px; }
+.lp-considered__head h2 { max-width: 720px; margin-top: 16px; font-size: clamp(36px, 4vw, 52px); line-height: 1.12; letter-spacing: -.04em; }
+.lp-considered__head h2 strong { font-weight: 400; color: #8f6d67; }
+.lp-considered__body { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: stretch; padding: 0 40px 80px; }
+.lp-considered__body > img { width: 100%; height: 100%; min-height: 500px; object-fit: cover; object-position: 42% center; border-radius: 12px; outline: 1px solid oklch(0 0 0 / .1); }
+.lp-considered__copy { display: flex; flex-direction: column; justify-content: center; gap: 18px; }
+.lp-considered__copy h3 { font-size: 32px; line-height: 1.15; letter-spacing: -.03em; }
+.lp-considered__copy > p { max-width: 540px; color: var(--q-text); font-size: 16px; line-height: 1.6; }
+.lp-considered__cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
+.lp-considered__cards article { display: flex; flex-direction: column; gap: 10px; min-height: 190px; padding: 22px; border-radius: 12px; background: #fff; }
+.lp-considered__cards span { color: #9a716a; font-family: var(--q-mono); font-size: 11px; line-height: 14px; text-transform: uppercase; }
+.lp-considered__cards h4 { margin: auto 0 0; color: var(--q-ink); font-family: var(--q-sans); font-size: 19px; font-weight: 400; line-height: 24px; }
+.lp-considered__cards p { color: var(--q-text); font-size: 14px; line-height: 20px; }
+
 /* Care, chosen by you */
 .lp-intro { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: end; gap: 48px; padding: 80px 40px 40px; border-bottom: 1px solid var(--q-line); }
 .lp-intro .lp-head { align-items: flex-start; padding: 0; text-align: left; }
@@ -244,7 +277,8 @@ html:has(body.landing) { scroll-padding-top: 88px; }
 
 /* Studies show: tabbed evidence cards */
 .lp-studies__head { display: flex; flex-direction: column; align-items: flex-start; gap: 24px; padding: 96px 40px 40px; }
-.lp-studies__title { max-width: 920px; font-size: clamp(34px, 3.9vw, 56px); line-height: 1.14; letter-spacing: calc(-.03em - 1px); color: var(--q-ink); text-wrap: balance; }
+.lp-studies__title { max-width: 1120px; font-size: clamp(34px, 3.7vw, 52px); line-height: 1.14; letter-spacing: calc(-.03em - 1px); color: var(--q-ink); text-wrap: balance; }
+.lp-studies__title span, .lp-studies__title strong { display: block; }
 .lp-studies__title strong { font-weight: 400; color: var(--q-accent); }
 .lp-tabs { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-top: 24px; padding: 4px; border: 1px solid var(--q-line); border-radius: 9999px; background: #fff; }
 .lp-tabs button { height: 44px; padding: 0 24px; border: 0; border-radius: 9999px; background: none; color: var(--q-text); font-size: 16px; line-height: 20px; transition: background-color .2s, color .2s; }
@@ -499,6 +533,8 @@ body.landing.is-inner main { padding-top: 80px; }
   .lp-card__visual { height: 300px; }
 }
 @media (max-width: 899px) {
+  .lp-considered__body { grid-template-columns: 1fr; gap: 28px; }
+  .lp-considered__body > img { height: 400px; min-height: 0; }
   .lp-nav__links { display: none; }
   .lp-nav__bar { grid-template-columns: 1fr auto; }
   .lp-cards { grid-template-columns: 1fr; }
@@ -516,6 +552,24 @@ body.landing.is-inner main { padding-top: 80px; }
   .lp-footer__info { grid-column: 1 / -1; }
 }
 @media (max-width: 699px) {
+  .lp-concepts__head { padding: 64px 16px 28px; }
+  .lp-concepts__head h2 { font-size: 34px; }
+  .lp-concepts__grid { grid-template-columns: 1fr; gap: 20px; padding: 0 12px; }
+  .lp-concept__visual { aspect-ratio: 1.6; }
+  .lp-concept__before, .lp-concept__after { bottom: 10px; font-size: 9px; }
+  .lp-concept__before { left: 10px; }
+  .lp-concept__after { left: calc(50% + 10px); }
+  .lp-concept figcaption { font-size: 12px; }
+  .lp-concepts__note { padding: 16px 16px 56px; }
+  .lp-considered__head { padding: 56px 16px 32px; }
+  .lp-considered__head h2 { font-size: 34px; }
+  .lp-considered__body { padding: 0 12px 56px; }
+  .lp-considered__body > img { height: 280px; }
+  .lp-considered__copy { padding: 0 4px; }
+  .lp-considered__copy h3 { font-size: 28px; }
+  .lp-considered__cards { margin-top: 8px; }
+  .lp-considered__cards article { min-height: 180px; padding: 16px; }
+  .lp-considered__cards h4 { font-size: 17px; }
   body.landing.is-inner main { padding-top: 64px; }
   .lp-head--page { padding-top: 48px; }
   .lp-head--split { flex-direction: column; align-items: flex-start; padding: 48px 16px 16px; }

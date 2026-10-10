@@ -26,7 +26,7 @@
   <div class="lp-frame__inner">
     <div class="lp-studies__head">
       <p class="lp-chip">The cost of waiting</p>
-      <h2 class="lp-studies__title">Studies show the care you keep postponing costs more than you think, <strong>from your health to your pocket.</strong></h2>
+      <h2 class="lp-studies__title"><span>Studies show waiting has a cost.</span><strong>For your health and your pocket.</strong></h2>
       <div class="lp-tabs" role="tablist" aria-label="Evidence by topic">
         <% topics.each_with_index do |(topic, _), index| %>
           <button type="button" role="tab" id="evidence-tab-<%= index %>" aria-controls="evidence-panel-<%= index %>" aria-selected="<%= index.zero? %>" tabindex="<%= index.zero? ? 0 : -1 %>" data-tabs-target="tab" data-action="tabs#select keydown->tabs#key"><%= topic %></button>
