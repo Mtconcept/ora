@@ -50,6 +50,6 @@ group :development do
 end
 
 # Rails 8.1 passes a positional options hash to JSON.parse; JSON 3 requires keywords.
-gem "json", "~> 2.19"
+gem "json", "~> 3.0"
 
 gem "rotp", "~> 6.3"
