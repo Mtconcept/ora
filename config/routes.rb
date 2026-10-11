@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
+  get "/", to: "admin/sessions#entry", constraints: { host: "admin.myora.care" }, as: :admin_entry
   root "pages#home"
+  get "robots.txt", to: "pages#robots"
   get "how-it-works", to: "pages#how", as: :how
   get "affordability", to: "pages#affordability"
   get "mobile", to: "pages#mobile"
@@ -33,6 +35,8 @@ Rails.application.routes.draw do
   namespace :admin do
     get "sign-in", to: "sessions#new", as: :sign_in
     post "sign-in", to: "sessions#create"
+    get "two-factor", to: "sessions#two_factor", as: :two_factor
+    post "two-factor", to: "sessions#confirm_two_factor"
     delete "sign-out", to: "sessions#destroy", as: :sign_out
     root "dashboard#index"
     resources :users do

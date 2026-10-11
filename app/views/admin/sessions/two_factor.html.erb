@@ -1,0 +1,21 @@
+<% content_for :title, "Verify your sign-in" %>
+<section class="immersive-content">
+  <div class="onboarding-card">
+    <span class="eyebrow">ORA OPERATIONS</span>
+    <% if @secret %>
+      <h1>Protect your account.</h1>
+      <p>In your authenticator app, add an account manually using this setup key. Then enter its six-digit code to finish sign-in.</p>
+      <p><strong>Ora · <%= @email %></strong></p>
+      <p class="admin-setup-key"><code><%= @secret %></code></p>
+      <p>Keep this key private. You will receive one-time recovery codes after setup.</p>
+    <% else %>
+      <h1>One more step.</h1>
+      <p>Enter the six-digit code from your authenticator app, or one of your unused recovery codes.</p>
+    <% end %>
+    <%= form_with url: admin_two_factor_path do |f| %>
+      <%= f.label :code, @secret ? "Authenticator code" : "Authenticator or recovery code" %>
+      <%= f.text_field :code, required: true, autocomplete: "one-time-code", inputmode: "numeric", autofocus: true %>
+      <%= f.submit "Continue →", class: "button primary full" %>
+    <% end %>
+  </div>
+</section>

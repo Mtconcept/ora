@@ -51,3 +51,5 @@ end
 
 # Rails 8.1 passes a positional options hash to JSON.parse; JSON 3 requires keywords.
 gem "json", "~> 2.19"
+
+gem "rotp", "~> 6.3"

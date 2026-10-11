@@ -30,9 +30,11 @@ The seed refuses to run in production and creates no patient records. Set `ORA_A
 
 ## Railway deployment
 
-The Railway project builds from `Mtconcept/ora` on `main` and uses a PostgreSQL service. Set `RAILS_ENV=production`, `DATABASE_URL=${{Postgres.DATABASE_URL}}`, and `RAILS_MASTER_KEY` (the private contents of `config/master.key`) on the app service. Configure `bin/rails db:migrate` as its pre-deploy command and `/up` as its healthcheck path, then deploy the staged changes. `db:prepare` would also run the fictional seeds on a new database, so it must not be used in production. Keep the master key out of Git and logs.
+The Railway project builds from `Mtconcept/ora` on `main` and uses PostgreSQL. The app service uses `RAILS_ENV=production`, `DATABASE_URL=${{Postgres.DATABASE_URL}}`, `RAILS_MASTER_KEY`, `ORA_ADMIN_EMAIL`, and `ORA_ADMIN_PASSWORD`. Its pre-deploy command is `bin/rails db:migrate admin:seed` and its healthcheck is `/up`. `db:prepare` would also run fictional seeds on a new database, so it must not be used in production. Keep the master key and admin password out of Git and logs.
 
-The production database starts empty. The fictional local seeds intentionally refuse to run there; add real providers and procedures only after their details and verification have been approved. Production patient phone sign-in remains disabled until SMS verification is integrated, and a production admin account is not automatically created. A reachable website is therefore a deployment preview, not approval to accept real patients or financing applications.
+Railway has `admin.myora.care` attached to the app service. Add the CNAME and TXT verification records shown in Railway's **Settings → Networking** to the domain's DNS, then wait for Railway to verify the domain and issue HTTPS. Only after `https://admin.myora.care/` works, set `ADMIN_HOST_ENFORCED=1` on the app service to redirect `/admin` on other hosts to the admin sign-in. Staff sign in with a password, enroll an authenticator app using the displayed setup key, and save the one-time recovery codes. The admin subdomain and public site share this Rails deployment and database; the hostname alone is not infrastructure isolation.
+
+The fictional local seeds intentionally refuse to run in production; add real providers and procedures only after their details and verification have been approved. Production patient phone sign-in remains disabled until SMS verification is integrated. A reachable website is therefore a deployment preview, not approval to accept real patients or financing applications.
 
 ## Working journeys
 

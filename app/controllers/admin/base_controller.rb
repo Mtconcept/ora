@@ -6,7 +6,7 @@ class Admin::BaseController < ApplicationController
   private
 
   def current_admin
-    @current_admin ||= User.staff.find_by(id: session[:admin_id], status: "active")
+    @current_admin ||= User.staff.where.not(totp_confirmed_at: nil).find_by(id: session[:admin_id], status: "active")
   end
 
   def require_admin

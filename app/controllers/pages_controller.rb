@@ -18,6 +18,10 @@ class PagesController < ApplicationController
     by_slug = @procedures.index_by(&:slug)
     @hero_options = HERO_OPTIONS.filter_map { |slug, area, phrase, scene| { procedure: by_slug[slug], area:, phrase:, scene: } if by_slug[slug] }
   end
+  def robots
+    rule = request.host == "admin.myora.care" ? "Disallow: /" : "Disallow: /admin/"
+    render plain: "User-agent: *\n#{rule}\n", content_type: "text/plain"
+  end
   def how; end
   def mobile; end
   def privacy; end

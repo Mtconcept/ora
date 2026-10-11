@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_11_000000) do
   create_table "admin_audit_events", force: :cascade do |t|
     t.string "action", null: false
     t.integer "actor_id", null: false
@@ -215,6 +215,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000000) do
     t.string "phone", null: false
     t.string "role", default: "customer", null: false
     t.string "status", default: "active", null: false
+    t.datetime "totp_confirmed_at"
+    t.bigint "totp_last_used_at"
+    t.json "totp_recovery_codes", default: [], null: false
+    t.text "totp_secret_ciphertext"
     t.datetime "updated_at", null: false
     t.index ["deleted_at"], name: "index_users_on_deleted_at"
     t.index ["email"], name: "index_users_on_email"

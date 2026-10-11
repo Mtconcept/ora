@@ -1,0 +1,10 @@
+<% content_for :title, "Save your recovery codes" %>
+<section class="immersive-content">
+  <div class="onboarding-card">
+    <span class="eyebrow">ORA OPERATIONS</span>
+    <h1>Save your recovery codes.</h1>
+    <p>Two-factor authentication is on. Store these codes somewhere private. Each code works once, and they will not be shown again.</p>
+    <ul class="admin-recovery-codes"><% @recovery_codes.each do |code| %><li><code><%= code %></code></li><% end %></ul>
+    <%= link_to "Enter the care desk →", admin_root_path, class: "button primary full" %>
+  </div>
+</section>

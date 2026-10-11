@@ -3,6 +3,7 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Admin" %> · Ora</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex,nofollow,noarchive">
     <%= csrf_meta_tags %><%= csp_meta_tag %>
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %><%= javascript_importmap_tags %>
@@ -24,7 +25,7 @@
         <%= admin_nav_link "Settings", admin_settings_path, "settings", controller_name.in?(%w[settings users]) || (controller_name == "dashboard" && action_name == "inbox") %>
       </nav>
       <div class="sidebar-bottom">
-        <%= link_to root_path, class: "admin-view-site" do %><%= admin_icon("external") %><span>View Ora website</span><% end %>
+        <%= link_to "https://myora.care/", class: "admin-view-site" do %><%= admin_icon("external") %><span>View Ora website</span><% end %>
         <%= button_to admin_sign_out_path, method: :delete, class: "sidebar-signout" do %><%= admin_icon("logout") %><span>Sign out</span><% end %>
       </div>
     </aside>

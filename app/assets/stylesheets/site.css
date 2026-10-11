@@ -144,6 +144,9 @@ body.landing .journey-counter { top: 31px; left: 50%; right: auto; transform: tr
 body.landing .onboarding-card { border-radius: 16px; background: #fff; box-shadow: 0 40px 80px -32px rgba(16, 24, 28, .45); }
 body.landing .onboarding-card h1 { font-size: 36px; line-height: 1.1; }
 body.landing .onboarding-card input:not([type=submit]):not([type=checkbox]):not([type=radio]) { background: #fff; }
+.admin-setup-key { padding: 14px; border: 1px solid #dedfd3; border-radius: 5px; overflow-wrap: anywhere; letter-spacing: 2px; color: #303529; }
+.admin-recovery-codes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 0; list-style: none; }
+.admin-recovery-codes li { padding: 10px; border: 1px solid #dedfd3; border-radius: 5px; text-align: center; }
 body.landing .radio-option { border-color: #e3e8ea; border-radius: 12px; font-size: 14px; }
 body.landing .radio-option:hover { background: var(--q-card); }
 body.landing .radio-option:has(input:checked) { border-color: var(--q-ink); background: var(--q-card); }

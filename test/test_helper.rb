@@ -8,6 +8,7 @@ class ActiveSupport::TestCase
     @listing = Listing.create!(procedure: @procedure, provider: @provider, price: 600000)
     @patient = User.create!(first_name: "Test", last_name: "Patient", phone: "+2348099990001", email: "patient@example.test")
     @admin = User.create!(first_name: "Test", phone: "+2348099990002", email: "admin@example.test", role: "super_admin", status: "active", admin: true, password: "TestPassword2026!")
+    @admin.update!(totp_secret: ROTP::Base32.random, totp_confirmed_at: Time.current)
   end
   def next_weekday
     day = Date.current + 3
@@ -26,5 +27,6 @@ class ActionDispatch::IntegrationTest
   end
   def login_admin(client = self)
     client.post admin_sign_in_path, params: { email: @admin.email, password: "TestPassword2026!" }
+    client.post admin_two_factor_path, params: { code: @admin.reload.totp.now }
   end
 end
