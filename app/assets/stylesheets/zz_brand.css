@@ -1,0 +1,90 @@
+/* Ora's brand layer sits after the public and admin component styles. */
+:root { --ora-nile: #1f4044; --ora-wine-berry: #46253a; }
+
+.ora-lockup {
+  display: inline-block;
+  flex: none;
+  width: 108px;
+  height: 36px;
+  background: currentColor;
+  -webkit-mask: url(ora-logo-white.png) center / contain no-repeat;
+  mask: url(ora-logo-white.png) center / contain no-repeat;
+}
+
+body.landing {
+  --q-ink: var(--ora-nile);
+  --q-text: #455d60;
+  --q-muted: #5e7072;
+  --q-accent: var(--ora-wine-berry);
+  --q-accent-2: #715264;
+  --q-accent-3: #eadfe5;
+  --q-slate: #536e71;
+  --q-line: #eee9e7;
+  --q-card: #faf8f7;
+  --q-soft: #fdfbf9;
+  --q-chip-line: rgba(70, 37, 58, .2);
+  --line: var(--q-line);
+  background: #fffdfb;
+}
+
+.lp-nav.is-scrolled { background: rgba(255, 253, 251, .94); }
+.lp-nav.is-scrolled .lp-nav__join,
+body.landing .button.primary,
+.lp-btn--dark { background: var(--ora-wine-berry); border-color: var(--ora-wine-berry); color: #fff; }
+.lp-nav.is-scrolled .lp-nav__join:hover,
+body.landing .button.primary:hover,
+.lp-btn--dark:hover { background: #352032; border-color: #352032; }
+.lp-hero { background: var(--ora-nile); }
+.lp-hero__shade { background: linear-gradient(180deg, rgba(17, 39, 42, .5), transparent 24%), linear-gradient(90deg, rgba(18, 42, 45, .78), rgba(18, 42, 45, .34) 48%, transparent 78%), linear-gradient(180deg, transparent 48%, rgba(19, 42, 45, .88)); }
+.lp-concepts, .lp-considered { background: #f9f6f4; }
+.lp-concepts__head h2 strong, .lp-considered__head h2 strong { color: var(--ora-wine-berry); }
+.lp-considered__cards span { color: var(--ora-wine-berry); }
+.lp-way--ora { background: var(--ora-nile); }
+.lp-journey { background: var(--ora-wine-berry); }
+.lp-cta,
+body.landing .closing-cta {
+  background-color: var(--ora-nile);
+  background-image: radial-gradient(circle at 90% 15%, rgba(114, 78, 101, .46), transparent 44%), repeating-radial-gradient(circle at 50% 115%, rgba(255, 255, 255, .09) 0 1px, transparent 1px 72px);
+}
+.lp-card__visual, .lp-profile__tile, .lp-offer__mono { background-image: linear-gradient(155deg, #648083, var(--ora-nile)); }
+.lp-card--vision .lp-card__visual, .lp-profile__tile.lp-card--vision, .lp-offer__mono.lp-card--vision { background-image: linear-gradient(155deg, #9b7489, var(--ora-wine-berry)); }
+.lp-card--cosmetic .lp-card__visual, .lp-profile__tile.lp-card--cosmetic, .lp-offer__mono.lp-card--cosmetic { background-image: linear-gradient(155deg, #967d87, #533049); }
+body.landing .category-dental:is(.procedure-art, .detail-art, .care-card-icon) { background: linear-gradient(155deg, #648083, var(--ora-nile)); }
+body.landing .category-vision:is(.procedure-art, .detail-art, .care-card-icon) { background: linear-gradient(155deg, #9b7489, var(--ora-wine-berry)); }
+body.landing .category-cosmetic:is(.procedure-art, .detail-art, .care-card-icon) { background: linear-gradient(155deg, #967d87, #533049); }
+body.landing :is(input, textarea, select):focus, .lp-search:focus-within { border-color: var(--ora-wine-berry) !important; box-shadow: 0 0 0 4px rgba(70, 37, 58, .14) !important; }
+body.landing.immersive-body { background-color: var(--ora-nile); background-image: radial-gradient(ellipse at 14% 80%, rgba(125, 75, 100, .65), transparent 44%), radial-gradient(ellipse at 88% 18%, rgba(34, 79, 80, .9), transparent 48%), linear-gradient(145deg, #18383b, #2b4950 52%, #46253a); }
+body.landing .mobile-launch { background: radial-gradient(ellipse at 78% 58%, #eee2e7, transparent 56%), #fffdfb; }
+.phone-mock > .ora-lockup { display: block; width: 96px; height: 32px; margin: 0 auto; color: var(--ora-nile); }
+.lp-footer__mark { padding: 54px 24px; border-color: transparent; background: var(--ora-nile); color: #fff; }
+.lp-footer__mark .ora-lockup { width: min(56vw, 420px); height: auto; aspect-ratio: 3 / 1; }
+
+/* The operations console stays white and restrained, with brand accents only where they guide action. */
+.admin-body {
+  --admin-blue: var(--ora-wine-berry);
+  --admin-ink: var(--ora-nile);
+  --admin-muted: #617175;
+  --admin-border: #e9e8e7;
+  --admin-soft: #faf8f7;
+}
+.admin-logo { display: inline-flex; align-items: center; color: var(--ora-nile); }
+.admin-logo .ora-lockup { width: 91px; height: 31px; }
+.admin-body .admin-sidebar nav > a { color: #4f6265; }
+.admin-body .admin-sidebar nav > a.active,
+.admin-filter-tabs a.active,
+.settings-nav a.active { background: #f4ebf0; color: var(--ora-wine-berry); }
+.admin-body .button.primary:hover { background: #352032; border-color: #352032; }
+.admin-body .button.secondary { color: var(--ora-nile); }
+.admin-body .metric > div, .admin-body .data-table td, .admin-body .data-table td > strong,
+.admin-body .patient-cell strong, .admin-body .data-table .patient-cell small { color: var(--ora-nile); }
+.admin-body .data-table th, .admin-body .admin-user-table th { background: #faf8f7; color: #54686a; }
+.admin-body input:focus, .admin-body textarea:focus, .admin-body select:focus,
+.admin-body .admin-search input:focus { border-color: var(--ora-wine-berry) !important; box-shadow: 0 0 0 3px rgba(70, 37, 58, .12); }
+.settings-hero { background: linear-gradient(135deg, #fffdfc, #f6edf1); box-shadow: inset 0 0 0 1px #e8dce3; }
+.settings-hero::after { border-color: rgba(70, 37, 58, .05); }
+
+@media (max-width: 699px) {
+  .lp-logo .ora-lockup { width: 96px; height: 32px; }
+  .lp-footer__mark { padding: 34px 16px; }
+  .lp-footer__mark .ora-lockup { width: min(68vw, 300px); }
+}

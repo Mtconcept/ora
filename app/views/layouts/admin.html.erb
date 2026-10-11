@@ -3,6 +3,7 @@
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Admin" %> · Ora</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#1f4044">
     <meta name="robots" content="noindex,nofollow,noarchive">
     <%= csrf_meta_tags %><%= csp_meta_tag %>
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -11,7 +12,7 @@
   <body class="admin-body">
     <a href="#main" class="skip-link">Skip to content</a>
     <aside class="admin-sidebar">
-      <div class="admin-brand"><%= link_to "ora", admin_root_path, class: "admin-logo" %><span>Admin</span></div>
+      <div class="admin-brand"><%= link_to admin_root_path, class: "admin-logo", "aria-label": "Ora admin home" do %><span class="ora-lockup" aria-hidden="true"></span><% end %><span>Admin</span></div>
       <%# Navigation carries the jobs operations does, not every screen. Pricing lives inside
           Procedures, and the concierge inbox and staff accounts live under Settings. %>
       <nav aria-label="Admin navigation">

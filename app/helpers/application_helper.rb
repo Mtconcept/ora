@@ -28,10 +28,10 @@ module ApplicationHelper
   end
   def category_icon(category) = { "Dental" => "tooth", "Vision" => "eye", "Cosmetic" => "spark" }[category]
 
-  # The landing page's logo glyph: an open ring with a rising sun, drawn in the current text colour.
+  # Compact version of Ora's six-petal mark for small UI placements.
   def ora_mark(size: 26)
-    content_tag(:svg, '<circle cx="14" cy="17" r="9.5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="23.5" cy="7.5" r="3.5" fill="currentColor"/>'.html_safe,
-      width: size, height: size, viewBox: "0 0 30 30", 'aria-hidden': true)
+    content_tag(:svg, '<path fill="currentColor" fill-rule="evenodd" d="M24 2c5.1 0 8.2 3.6 8.5 7.5 3.5-1.7 8.1-.8 10.6 3.6 2.5 4.4 1.2 8.9-2 11 3.2 2.1 4.5 6.6 2 11-2.5 4.4-7.1 5.3-10.6 3.6C32.2 42.4 29.1 46 24 46s-8.2-3.6-8.5-7.5c-3.5 1.7-8.1.8-10.6-3.6-2.5-4.4-1.2-8.9 2-11-3.2-2.1-4.5-6.6-2-11 2.5-4.4 7.1-5.3 10.6-3.6C15.8 5.6 18.9 2 24 2Zm0 13.3c-1.7 0-2.8 1.5-4.2 1.5-1.4 0-2.6-.6-4.1.2-1.5.9-1.9 2.3-1.1 3.5-.9 1.4-2.3 1.8-2.3 3.5s1.4 2.1 2.3 3.5c-.8 1.2-.4 2.6 1.1 3.5 1.5.8 2.7.2 4.1.2 1.4 0 2.5 1.5 4.2 1.5s2.8-1.5 4.2-1.5c1.4 0 2.6.6 4.1-.2 1.5-.9 1.9-2.3 1.1-3.5.9-1.4 2.3-1.8 2.3-3.5s-1.4-2.1-2.3-3.5c.8-1.2.4-2.6-1.1-3.5-1.5-.8-2.7-.2-4.1-.2-1.4 0-2.5-1.5-4.2-1.5Z"/>'.html_safe,
+      width: size, height: size, viewBox: "0 0 48 48", 'aria-hidden': true)
   end
   def status_badge(value) = content_tag(:span, label_for(value), class: "badge badge-#{value}")
 

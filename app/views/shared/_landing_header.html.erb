@@ -1,7 +1,7 @@
 <% home = controller_name == 'pages' && action_name == 'home' %>
 <header class="lp-nav<%= ' is-scrolled' unless home %>" data-controller="landing-nav">
   <div class="lp-nav__bar">
-    <%= link_to root_path, class: 'lp-logo', 'aria-label': 'Ora home' do %><%= ora_mark %><span>ora</span><% end %>
+    <%= link_to root_path, class: 'lp-logo', 'aria-label': 'Ora home' do %><span class="ora-lockup" aria-hidden="true"></span><% end %>
     <nav class="lp-nav__links" aria-label="Main navigation">
       <%= link_to 'Why Ora', home ? '#compare' : root_path(anchor: 'compare') %>
       <%= link_to 'Treatments', procedures_path, 'aria-current': ('page' if controller_name == 'procedures') %>

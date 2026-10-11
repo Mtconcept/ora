@@ -3,6 +3,7 @@
 <head>
   <title><%= content_for?(:title) ? "#{yield(:title)} — Ora" : 'Ora — Care, on your terms.' %></title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1f4044">
   <% if controller_path.start_with?("admin/") %><meta name="robots" content="noindex,nofollow,noarchive"><% end %>
   <meta name="description" content="A more considered way to find planned healthcare, understand your options, and take your next step with confidence.">
   <%= csrf_meta_tags %><%= csp_meta_tag %>
@@ -15,7 +16,7 @@
 <body class="landing <%= home ? 'is-home' : immersive ? 'immersive-body' : 'is-inner' %>" data-controller="navigation">
   <a href="#main" class="skip-link">Skip to content</a>
   <% if immersive %>
-    <header class="immersive-header"><%= link_to root_path, class: 'lp-logo', 'aria-label': 'Ora home' do %><%= ora_mark %><span>ora</span><% end %><%= link_to 'Close ×', procedures_path, class: 'quiet-link' %></header>
+    <header class="immersive-header"><%= link_to root_path, class: 'lp-logo', 'aria-label': 'Ora home' do %><span class="ora-lockup" aria-hidden="true"></span><% end %><%= link_to 'Close ×', procedures_path, class: 'quiet-link' %></header>
   <% else %>
     <%= render 'shared/landing_header' %>
   <% end %>
